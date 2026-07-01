@@ -1,0 +1,204 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+
+    background:#050505;
+
+    color:white;
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    overflow:hidden;
+
+    position:relative;
+}
+
+.background-blur{
+
+    position:absolute;
+
+    inset:0;
+
+    overflow:hidden;
+}
+
+.circle{
+
+    position:absolute;
+
+    border-radius:50%;
+
+    filter:blur(120px);
+
+    opacity:.35;
+}
+
+.circle1{
+
+    width:320px;
+
+    height:320px;
+
+    background:#d4af37;
+
+    top:-80px;
+
+    left:-60px;
+}
+
+.circle2{
+
+    width:280px;
+
+    height:280px;
+
+    background:#b8860b;
+
+    right:-50px;
+
+    bottom:-60px;
+}
+
+.register-card{
+
+    width:450px;
+
+    max-width:95%;
+
+    background:rgba(18,18,18,.85);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(212,175,55,.25);
+
+    border-radius:22px;
+
+    padding:45px;
+
+    box-shadow:0 0 50px rgba(212,175,55,.12);
+}
+
+.logo{
+
+    text-align:center;
+
+    margin-bottom:35px;
+}
+
+.logo h2{
+
+    color:#d4af37;
+
+    font-weight:700;
+
+    letter-spacing:2px;
+}
+
+.logo p{
+
+    color:#aaa;
+
+    margin-top:8px;
+}
+
+.form-label{
+
+    color:#ddd;
+
+    margin-bottom:8px;
+}
+
+.input-group-text{
+
+    background:#1d1d1d;
+
+    color:#d4af37;
+
+    border:1px solid #333;
+}
+
+.form-control{
+
+    background:#151515;
+
+    color:white;
+
+    border:1px solid #333;
+}
+
+.form-control:focus{
+
+    background:#151515;
+
+    color:white;
+
+    border-color:#d4af37;
+
+    box-shadow:0 0 0 .15rem rgba(212,175,55,.25);
+}
+
+.register-btn{
+
+    background:linear-gradient(90deg,#d4af37,#f2cf63);
+
+    border:none;
+
+    color:#111;
+
+    font-weight:600;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    transition:.3s;
+}
+
+.register-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 30px rgba(212,175,55,.35);
+}
+
+.bottom-text{
+
+    text-align:center;
+
+    margin-top:25px;
+
+    color:#bbb;
+}
+
+.bottom-text a{
+
+    color:#d4af37;
+
+    text-decoration:none;
+
+    font-weight:600;
+}
+
+.bottom-text a:hover{
+
+    color:white;
+}
+
+@media(max-width:576px){
+
+    .register-card{
+
+        padding:30px 22px;
+    }
+}

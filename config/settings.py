@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'rest_framework',
+    'rest_framework.authtoken',
+
     'accounts',
     'wallet',
     'transactions',
@@ -45,6 +48,7 @@ INSTALLED_APPS = [
     'dashboard',
     'api',
     'landing',
+    'mining',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +141,4 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = "accounts.User"
