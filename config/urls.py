@@ -19,6 +19,9 @@ urlpatterns = [
 
     # Mining APIs
     path("api/mining/", include("mining.urls")),
+
+    # Wallet API
+    path("api/wallet/", include("wallet.urls")),
 ]
 
 if settings.DEBUG:
