@@ -9,9 +9,11 @@ class MiningSessionAdmin(admin.ModelAdmin):
         "id",
         "user",
         "status",
+        "reward_rate",
         "reward",
         "started_at",
         "ends_at",
+        "claimed_at",
     )
 
     list_filter = (
@@ -19,5 +21,6 @@ class MiningSessionAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
+        "user__username",
         "user__email",
     )
