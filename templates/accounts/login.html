@@ -132,11 +132,13 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    // Do NOT store token in localStorage per user instructions.
-                    // Token is returned in API response: data.token
-                    
-                    // Redirect to home page or dashboard on success
-                    window.location.href = "/";
+                    // Store token in sessionStorage (tab-scoped; cleared when tab closes)
+                    if (data.token) {
+                        sessionStorage.setItem("sikka_token", data.token);
+                    }
+
+                    // Redirect to dashboard
+                    window.location.href = "/dashboard/";
                 } else {
                     // Display errors
                     if (data.error) {

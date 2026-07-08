@@ -22,6 +22,9 @@ urlpatterns = [
 
     # Wallet API
     path("api/wallet/", include("wallet.urls")),
+
+    # Dashboard
+    path("dashboard/", include("dashboard.urls")),
 ]
 
 if settings.DEBUG:

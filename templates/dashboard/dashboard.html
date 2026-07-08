@@ -1,0 +1,267 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | SIKKA Blockchain Platform</title>
+    <meta name="description" content="Manage your SIKKA wallet, mine rewards, and track your blockchain activity.">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Google Fonts — same as landing page -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Dashboard CSS -->
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+
+<body>
+
+<!-- ── Toast Container ─────────────────────────────────────── -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ── Sidebar Overlay (mobile) ───────────────────────────── -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- ── Layout ─────────────────────────────────────────────── -->
+<div class="dash-layout">
+
+    <!-- ── Sidebar ──────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+
+        <a class="sidebar-brand" href="/">
+            <i class="bi bi-currency-exchange brand-icon"></i>
+            <span class="brand-name">SIKKA</span>
+        </a>
+
+        <ul class="sidebar-nav">
+            <li>
+                <a href="#" class="active" id="nav-dashboard">
+                    <i class="bi bi-grid-1x2-fill"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="#section-wallet" id="nav-wallet">
+                    <i class="bi bi-wallet2"></i> Wallet
+                </a>
+            </li>
+            <li>
+                <a href="#section-mining" id="nav-mining">
+                    <i class="bi bi-cpu"></i> Mining
+                </a>
+            </li>
+            <li>
+                <a href="#section-history" id="nav-history">
+                    <i class="bi bi-clock-history"></i> History
+                </a>
+            </li>
+            <li>
+                <a href="#" id="sidebar-logout">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" id="sidebar-avatar">U</div>
+                <div>
+                    <div class="sidebar-username" id="sidebar-username">Loading…</div>
+                    <div class="sidebar-email" id="sidebar-email"></div>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+    <!-- end sidebar -->
+
+    <!-- ── Top Navbar ────────────────────────────────────────── -->
+    <nav class="topnav">
+        <div class="d-flex align-items-center gap-3">
+            <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+                <i class="bi bi-list"></i>
+            </button>
+            <span class="topnav-title">Dashboard</span>
+        </div>
+        <div class="topnav-actions">
+            <span class="topnav-badge"><i class="bi bi-person-circle me-1"></i><span id="nav-username">…</span></span>
+            <button class="btn-danger-outline" id="btn-logout">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- ── Main Content ──────────────────────────────────────── -->
+    <main class="main-content">
+
+        <!-- Row 1: Welcome -->
+        <div class="dash-card welcome-card mb-4">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <div class="welcome-title">Welcome back, <span id="welcome-username">…</span> 👋</div>
+                    <div class="welcome-sub">Here's your SIKKA blockchain activity at a glance.</div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn-outline-gold" id="btn-refresh">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                    <a href="/" class="btn-outline-gold" style="text-decoration:none;">
+                        <i class="bi bi-house"></i> Home
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: Wallet & Mining Status side-by-side -->
+        <div class="row g-4 mb-4">
+
+            <!-- Wallet Card -->
+            <div class="col-lg-6" id="section-wallet">
+                <div class="dash-card h-100">
+                    <div class="card-header-row">
+                        <div class="card-title">
+                            <i class="bi bi-wallet2"></i> Wallet
+                        </div>
+                    </div>
+
+                    <div class="stat-value" id="wallet-balance">—</div>
+                    <div class="stat-label">Current Balance (SKA)</div>
+
+                    <div class="stat-grid mt-4">
+                        <div class="stat-item">
+                            <div class="stat-label">Total Mined</div>
+                            <div class="stat-value" style="font-size:1.1rem;" id="wallet-mined">—</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Total Sent</div>
+                            <div class="stat-value" style="font-size:1.1rem;" id="wallet-sent">—</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Total Received</div>
+                            <div class="stat-value" style="font-size:1.1rem;" id="wallet-received">—</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3" style="font-size:.75rem; color:var(--text-muted);">
+                        <i class="bi bi-calendar3 me-1"></i>
+                        Wallet created: <span id="wallet-created">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mining Card -->
+            <div class="col-lg-6" id="section-mining">
+                <div class="dash-card h-100">
+                    <div class="card-header-row">
+                        <div class="card-title">
+                            <i class="bi bi-cpu"></i> Mining
+                        </div>
+                        <span class="card-badge badge-idle" id="mining-status-badge">Idle</span>
+                    </div>
+
+                    <div class="mining-timer" id="mining-timer">00:00:00</div>
+                    <div class="mining-estimate">
+                        Estimated reward: <strong id="mining-estimate-val">0.00000000 SKA</strong>
+                    </div>
+
+                    <div class="mining-progress-wrap">
+                        <div class="mining-progress-label">
+                            <span>Progress (max 24 h)</span>
+                            <span id="mining-progress-pct">0%</span>
+                        </div>
+                        <div class="mining-progress">
+                            <div class="mining-progress-bar" id="mining-progress-bar" style="width:0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3" style="font-size:.75rem; color:var(--text-muted);">
+                        <i class="bi bi-clock me-1"></i>
+                        Started: <span id="mining-started-at">—</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Row 3: Quick Actions -->
+        <div class="dash-card mb-4">
+            <div class="card-header-row">
+                <div class="card-title">
+                    <i class="bi bi-lightning-charge"></i> Quick Actions
+                </div>
+            </div>
+            <div class="action-group">
+                <button class="btn-gold" id="btn-start">
+                    <i class="bi bi-play-fill"></i> Start Mining
+                </button>
+                <button class="btn-gold" id="btn-claim" disabled>
+                    <i class="bi bi-gift"></i> Claim Reward
+                </button>
+                <button class="btn-outline-gold" id="btn-refresh-actions">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh Status
+                </button>
+            </div>
+            <div class="mt-3" style="font-size:.78rem; color: var(--text-muted);">
+                <i class="bi bi-info-circle me-1"></i>
+                Mining accumulates rewards at <strong style="color:var(--gold);">10 SKA/hour</strong>, capped at 24 hours. Claim anytime.
+            </div>
+        </div>
+
+        <!-- Row 4: Mining History -->
+        <div class="dash-card" id="section-history">
+            <div class="card-header-row">
+                <div class="card-title">
+                    <i class="bi bi-clock-history"></i> Mining History
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Rate</th>
+                            <th>Reward Earned</th>
+                            <th>Started</th>
+                            <th>Claimed</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody">
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i class="bi bi-clock-history"></i>
+                                    No mining sessions yet. Start mining to earn rewards!
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+</div>
+<!-- end dash-layout -->
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Dashboard JS -->
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+<!-- Refresh-actions button wired after DOM ready -->
+<script>
+    document.getElementById("btn-refresh-actions")
+        ?.addEventListener("click", () => document.getElementById("btn-refresh")?.click());
+</script>
+
+</body>
+</html>
