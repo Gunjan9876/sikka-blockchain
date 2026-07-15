@@ -6,68 +6,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | SIKKA Blockchain Platform</title>
-    <meta name="description" content="Manage your SIKKA wallet, mine rewards, and track your blockchain activity.">
-
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!-- Google Fonts — same as landing page -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Dashboard CSS -->
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
 
 <body>
 
-<!-- ── Toast Container ─────────────────────────────────────── -->
 <div class="toast-container" id="toast-container"></div>
-
-<!-- ── Sidebar Overlay (mobile) ───────────────────────────── -->
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-<!-- ── Layout ─────────────────────────────────────────────── -->
 <div class="dash-layout">
 
-    <!-- ── Sidebar ──────────────────────────────────────────── -->
+    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-
         <a class="sidebar-brand" href="/">
             <i class="bi bi-currency-exchange brand-icon"></i>
             <span class="brand-name">SIKKA</span>
         </a>
-
         <ul class="sidebar-nav">
-            <li>
-                <a href="#" class="active" id="nav-dashboard">
-                    <i class="bi bi-grid-1x2-fill"></i> Dashboard
-                </a>
-            </li>
-            <li>
-                <a href="#section-wallet" id="nav-wallet">
-                    <i class="bi bi-wallet2"></i> Wallet
-                </a>
-            </li>
-            <li>
-                <a href="#section-mining" id="nav-mining">
-                    <i class="bi bi-cpu"></i> Mining
-                </a>
-            </li>
-            <li>
-                <a href="#section-history" id="nav-history">
-                    <i class="bi bi-clock-history"></i> History
-                </a>
-            </li>
-            <li>
-                <a href="#" id="sidebar-logout">
-                    <i class="bi bi-box-arrow-right"></i> Logout
-                </a>
-            </li>
+            <li><a href="#" class="active" id="nav-dashboard"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+            <li><a href="#section-wallet"><i class="bi bi-wallet2"></i> Wallet</a></li>
+            <li><a href="#section-send"><i class="bi bi-arrow-left-right"></i> Send SKA</a></li>
+            <li><a href="#section-mining"><i class="bi bi-cpu"></i> Mining</a></li>
+            <li><a href="#section-tx"><i class="bi bi-clock-history"></i> Transactions</a></li>
+            <li><a href="/dashboard/explorer/"><i class="bi bi-search"></i> Block Explorer</a></li>
+            <li><a href="#" id="sidebar-logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
         </ul>
-
         <div class="sidebar-footer">
             <div class="sidebar-user">
                 <div class="sidebar-avatar" id="sidebar-avatar">U</div>
@@ -77,59 +43,47 @@
                 </div>
             </div>
         </div>
-
     </aside>
-    <!-- end sidebar -->
 
-    <!-- ── Top Navbar ────────────────────────────────────────── -->
+    <!-- Topnav -->
     <nav class="topnav">
         <div class="d-flex align-items-center gap-3">
-            <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
-                <i class="bi bi-list"></i>
-            </button>
+            <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar"><i class="bi bi-list"></i></button>
             <span class="topnav-title">Dashboard</span>
         </div>
         <div class="topnav-actions">
             <span class="topnav-badge"><i class="bi bi-person-circle me-1"></i><span id="nav-username">…</span></span>
-            <button class="btn-danger-outline" id="btn-logout">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </button>
+            <button class="btn-danger-outline" id="btn-logout"><i class="bi bi-box-arrow-right"></i> Logout</button>
         </div>
     </nav>
 
-    <!-- ── Main Content ──────────────────────────────────────── -->
+    <!-- Main -->
     <main class="main-content">
 
-        <!-- Row 1: Welcome -->
+        <!-- Welcome -->
         <div class="dash-card welcome-card mb-4">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div>
                     <div class="welcome-title">Welcome back, <span id="welcome-username">…</span> 👋</div>
-                    <div class="welcome-sub">Here's your SIKKA blockchain activity at a glance.</div>
+                    <div class="welcome-sub">Your SIKKA blockchain activity at a glance.</div>
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
-                    <button class="btn-outline-gold" id="btn-refresh">
-                        <i class="bi bi-arrow-clockwise"></i> Refresh
-                    </button>
-                    <a href="/" class="btn-outline-gold" style="text-decoration:none;">
-                        <i class="bi bi-house"></i> Home
-                    </a>
+                    <button class="btn-outline-gold" id="btn-refresh"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+                    <a href="/" class="btn-outline-gold" style="text-decoration:none;"><i class="bi bi-house"></i> Home</a>
                 </div>
             </div>
         </div>
 
-        <!-- Row 2: Wallet & Mining Status side-by-side -->
+        <!-- Wallet + Mining -->
         <div class="row g-4 mb-4">
 
             <!-- Wallet Card -->
             <div class="col-lg-6" id="section-wallet">
                 <div class="dash-card h-100">
                     <div class="card-header-row">
-                        <div class="card-title">
-                            <i class="bi bi-wallet2"></i> Wallet
-                        </div>
+                        <div class="card-title"><i class="bi bi-wallet2"></i> Wallet</div>
+                        <span class="card-badge badge-idle" id="wallet-status">—</span>
                     </div>
-
                     <div class="stat-value" id="wallet-balance">—</div>
                     <div class="stat-label">Current Balance (SKA)</div>
 
@@ -149,8 +103,15 @@
                     </div>
 
                     <div class="mt-3" style="font-size:.75rem; color:var(--text-muted);">
-                        <i class="bi bi-calendar3 me-1"></i>
-                        Wallet created: <span id="wallet-created">—</span>
+                        <i class="bi bi-calendar3 me-1"></i> Created: <span id="wallet-created">—</span>
+                    </div>
+                   <div class="mt-2" style="font-size:.72rem; color:var(--text-muted); word-break:break-all;">
+                        <i class="bi bi-fingerprint me-1"></i> Address:
+                        <span id="wallet-address" style="font-family:monospace;">—</span>
+                        <button id="btn-copy-address" title="Copy address"
+                            style="background:none; border:none; color:var(--gold); cursor:pointer; padding:0 4px; vertical-align:middle;">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -159,17 +120,11 @@
             <div class="col-lg-6" id="section-mining">
                 <div class="dash-card h-100">
                     <div class="card-header-row">
-                        <div class="card-title">
-                            <i class="bi bi-cpu"></i> Mining
-                        </div>
+                        <div class="card-title"><i class="bi bi-cpu"></i> Mining</div>
                         <span class="card-badge badge-idle" id="mining-status-badge">Idle</span>
                     </div>
-
                     <div class="mining-timer" id="mining-timer">00:00:00</div>
-                    <div class="mining-estimate">
-                        Estimated reward: <strong id="mining-estimate-val">0.00000000 SKA</strong>
-                    </div>
-
+                    <div class="mining-estimate">Estimated reward: <strong id="mining-estimate-val">0.00000000 SKA</strong></div>
                     <div class="mining-progress-wrap">
                         <div class="mining-progress-label">
                             <span>Progress (max 24 h)</span>
@@ -179,89 +134,145 @@
                             <div class="mining-progress-bar" id="mining-progress-bar" style="width:0%"></div>
                         </div>
                     </div>
-
                     <div class="mt-3" style="font-size:.75rem; color:var(--text-muted);">
-                        <i class="bi bi-clock me-1"></i>
-                        Started: <span id="mining-started-at">—</span>
+                        <i class="bi bi-clock me-1"></i> Started: <span id="mining-started-at">—</span>
                     </div>
+
+                    <!-- Rig Info -->
+                    <div class="mt-3" style="border-top:1px solid var(--gold-border); padding-top:.75rem;">
+                        <div style="font-size:.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.5rem;">
+                            <i class="bi bi-cpu me-1"></i> Hardware Rig
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:.78rem; margin-bottom:.25rem;">
+                            <span style="color:var(--text-muted);">Tier</span>
+                            <span id="rig-tier-label" style="color:var(--gold); font-weight:600;">—</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:.78rem; margin-bottom:.25rem;">
+                            <span style="color:var(--text-muted);">Hash Rate</span>
+                            <span id="rig-hash-rate" style="color:#e0e0e0; font-family:monospace;">—</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:.78rem; margin-bottom:.5rem;">
+                            <span style="color:var(--text-muted);">Reward Multiplier</span>
+                            <span id="rig-multiplier" style="color:#e0e0e0;">—</span>
+                        </div>
+                        <div id="rig-upgrade-wrap">
+                            <button class="btn-outline-gold w-100" id="btn-upgrade-rig" style="font-size:.76rem; padding:.3rem .6rem;">
+                                <i class="bi bi-arrow-up-circle me-1"></i> Upgrade Rig — <span id="rig-upgrade-cost">—</span> SKA
+                            </button>
+                        </div>
+                        <div id="rig-max-label" style="display:none; font-size:.75rem; color:var(--gold); text-align:center; padding:.3rem 0;">
+                            <i class="bi bi-stars me-1"></i> Max Tier Reached
+                        </div>
+                    </div>
+
+                    <!-- Pool Status -->
+                    <div class="mt-3" style="border-top:1px solid var(--gold-border); padding-top:.75rem;">
+                        <div style="font-size:.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.5rem;">
+                            <i class="bi bi-people me-1"></i> Mining Pool
+                        </div>
+                        <div id="pool-status-wrap">
+                            <div style="display:flex; justify-content:space-between; font-size:.78rem; margin-bottom:.25rem;">
+                                <span style="color:var(--text-muted);">Status</span>
+                                <span id="pool-status-label" style="color:#e0e0e0;">—</span>
+                            </div>
+                            <div id="pool-detail" style="display:none;">
+                                <div style="display:flex; justify-content:space-between; font-size:.78rem; margin-bottom:.25rem;">
+                                    <span style="color:var(--text-muted);">Pool</span>
+                                    <span id="pool-name" style="color:var(--gold); font-weight:600;">—</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:.78rem; margin-bottom:.5rem;">
+                                    <span style="color:var(--text-muted);">Fee</span>
+                                    <span id="pool-fee" style="color:#e0e0e0;">—</span>
+                                </div>
+                                <button class="btn-outline-gold w-100" id="btn-leave-pool" style="font-size:.76rem; padding:.3rem .6rem; border-color:var(--danger); color:var(--danger);">
+                                    <i class="bi bi-door-open me-1"></i> Leave Pool
+                                </button>
+                            </div>
+                            <div id="pool-join-wrap" style="display:none;">
+                                <select id="pool-select" class="form-control" style="font-size:.78rem; margin-bottom:.4rem; background:var(--input-bg); color:var(--text-primary); border-color:var(--gold-border);">
+                                    <option value="">Select a pool…</option>
+                                </select>
+                                <button class="btn-gold w-100" id="btn-join-pool" style="font-size:.76rem; padding:.3rem .6rem;">
+                                    <i class="bi bi-people-fill me-1"></i> Join Pool
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
         </div>
 
-        <!-- Row 3: Quick Actions -->
+        <!-- Quick Actions -->
         <div class="dash-card mb-4">
             <div class="card-header-row">
-                <div class="card-title">
-                    <i class="bi bi-lightning-charge"></i> Quick Actions
-                </div>
+                <div class="card-title"><i class="bi bi-lightning-charge"></i> Quick Actions</div>
             </div>
             <div class="action-group">
-                <button class="btn-gold" id="btn-start">
-                    <i class="bi bi-play-fill"></i> Start Mining
-                </button>
-                <button class="btn-gold" id="btn-claim" disabled>
-                    <i class="bi bi-gift"></i> Claim Reward
-                </button>
-                <button class="btn-outline-gold" id="btn-refresh-actions">
-                    <i class="bi bi-arrow-clockwise"></i> Refresh Status
-                </button>
+                <button class="btn-gold" id="btn-start"><i class="bi bi-play-fill"></i> Start Mining</button>
+                <button class="btn-gold" id="btn-claim" disabled><i class="bi bi-gift"></i> Claim Reward</button>
+                <button class="btn-outline-gold" id="btn-refresh-actions"><i class="bi bi-arrow-clockwise"></i> Refresh Status</button>
             </div>
-            <div class="mt-3" style="font-size:.78rem; color: var(--text-muted);">
+            <div class="mt-3" style="font-size:.78rem; color:var(--text-muted);">
                 <i class="bi bi-info-circle me-1"></i>
-                Mining accumulates rewards at <strong style="color:var(--gold);">10 SKA/hour</strong>, capped at 24 hours. Claim anytime.
+                Mining earns <strong style="color:var(--gold);">10 SKA/hour</strong>, capped at 24 h. Claiming mines a real block on-chain.
             </div>
         </div>
 
-        <!-- Row 4: Mining History -->
-        <div class="dash-card" id="section-history">
+        <!-- Send SKA -->
+        <div class="dash-card mb-4" id="section-send">
             <div class="card-header-row">
-                <div class="card-title">
-                    <i class="bi bi-clock-history"></i> Mining History
+                <div class="card-title"><i class="bi bi-arrow-left-right"></i> Send SKA</div>
+            </div>
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-6">
+                    <label class="form-label" style="font-size:.82rem; color:var(--text-muted);">Receiver Wallet Address</label>
+                    <input type="text" id="send-address" class="form-control" placeholder="SKA…" style="font-family:monospace; font-size:.82rem;">
+                </div>
+                <div class="col-lg-3">
+                    <label class="form-label" style="font-size:.82rem; color:var(--text-muted);">Amount (SKA)</label>
+                    <input type="number" id="send-amount" class="form-control" placeholder="0.00000000" step="0.00000001" min="0">
+                </div>
+                <div class="col-lg-3">
+                    <button class="btn-gold w-100" id="btn-send"><i class="bi bi-send-fill"></i> Send</button>
                 </div>
             </div>
+            <div class="mt-2" style="font-size:.75rem; color:var(--text-muted);">
+                <i class="bi bi-info-circle me-1"></i>
+                Sender is debited immediately. Receiver is credited when the next block is mined.
+            </div>
+        </div>
 
+        <!-- Transaction History -->
+        <div class="dash-card" id="section-tx">
+            <div class="card-header-row">
+                <div class="card-title"><i class="bi bi-clock-history"></i> Transactions</div>
+            </div>
             <div class="table-responsive">
                 <table class="history-table">
                     <thead>
                         <tr>
+                            <th>TX Hash</th>
+                            <th>Type</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Amount</th>
                             <th>Status</th>
-                            <th>Rate</th>
-                            <th>Reward Earned</th>
-                            <th>Started</th>
-                            <th>Claimed</th>
                         </tr>
                     </thead>
-                    <tbody id="history-tbody">
-                        <tr>
-                            <td colspan="5">
-                                <div class="empty-state">
-                                    <i class="bi bi-clock-history"></i>
-                                    No mining sessions yet. Start mining to earn rewards!
-                                </div>
-                            </td>
-                        </tr>
+                    <tbody id="tx-tbody">
+                        <tr><td colspan="6"><div class="empty-state"><i class="bi bi-clock-history"></i> No transactions yet.</div></td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
     </main>
-
 </div>
-<!-- end dash-layout -->
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Dashboard JS -->
 <script src="{% static 'js/dashboard.js' %}"></script>
-
-<!-- Refresh-actions button wired after DOM ready -->
-<script>
-    document.getElementById("btn-refresh-actions")
-        ?.addEventListener("click", () => document.getElementById("btn-refresh")?.click());
-</script>
 
 </body>
 </html>

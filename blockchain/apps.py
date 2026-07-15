@@ -1,5 +1,8 @@
 from django.apps import AppConfig
 
-
 class BlockchainConfig(AppConfig):
-    name = 'blockchain'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "blockchain"
+
+    def ready(self):
+        import blockchain.signals  # noqa: F401

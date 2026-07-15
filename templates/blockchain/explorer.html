@@ -1,0 +1,242 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Explorer | SIKKA Blockchain Platform</title>
+    <meta name="description" content="Inspect the SIKKA chain — blocks, transactions, and addresses.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+
+<body>
+
+<div class="toast-container" id="toast-container"></div>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="dash-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <a class="sidebar-brand" href="/">
+            <i class="bi bi-currency-exchange brand-icon"></i>
+            <span class="brand-name">SIKKA</span>
+        </a>
+        <ul class="sidebar-nav">
+            <li><a href="{% url 'dashboard:dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+            <li><a href="{% url 'dashboard:dashboard' %}#section-wallet"><i class="bi bi-wallet2"></i> Wallet</a></li>
+            <li><a href="{% url 'dashboard:dashboard' %}#section-mining"><i class="bi bi-cpu"></i> Mining</a></li>
+            <li><a href="{% url 'dashboard:dashboard' %}#section-history"><i class="bi bi-clock-history"></i> History</a></li>
+            <li><a href="{% url 'dashboard:explorer' %}" class="active"><i class="bi bi-search"></i> Explorer</a></li>
+            <li><a href="#" id="sidebar-logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" id="sidebar-avatar">U</div>
+                <div>
+                    <div class="sidebar-username" id="sidebar-username">Loading…</div>
+                    <div class="sidebar-email" id="sidebar-email"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Top Navbar -->
+    <nav class="topnav">
+        <div class="d-flex align-items-center gap-3">
+            <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+                <i class="bi bi-list"></i>
+            </button>
+            <span class="topnav-title">Block Explorer</span>
+        </div>
+        <div class="topnav-actions">
+            <span class="topnav-badge"><i class="bi bi-person-circle me-1"></i><span id="nav-username">…</span></span>
+            <button class="btn-danger-outline" id="btn-logout">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Header + Search -->
+        <div class="dash-card welcome-card mb-4">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <div class="welcome-title">Block Explorer 🔎</div>
+                    <div class="welcome-sub">Search by block index, hash, address, or transaction ID.</div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn-outline-gold" id="btn-refresh-explorer">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                    <a href="{% url 'dashboard:dashboard' %}" class="btn-outline-gold" style="text-decoration:none;">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div class="input-group">
+                    <span class="input-group-text" style="background:var(--bg-surface); border-color:var(--gold-border); color:var(--gold);">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" id="explorer-search"
+                           placeholder="Block index, block hash, tx hash, or wallet address…"
+                           style="background:var(--bg-surface); border-color:var(--gold-border); color:var(--text-primary);">
+                    <button class="btn-gold" id="btn-explorer-search" type="button">Search</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chain Stats -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-6">
+                <div class="dash-card h-100">
+                    <div class="stat-value" id="stat-block-height">—</div>
+                    <div class="stat-label">Chain Height</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="dash-card h-100">
+                    <div class="stat-value" id="stat-tx-total">—</div>
+                    <div class="stat-label">Total Transactions</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="dash-card h-100">
+                    <div class="stat-value" id="stat-tx-pending">—</div>
+                    <div class="stat-label">Pending (Mempool)</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="dash-card h-100">
+                    <div class="stat-value" id="stat-difficulty">—</div>
+                    <div class="stat-label">Difficulty</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Block Detail Panel (hidden until a block is clicked) -->
+        <div class="dash-card mb-4" id="detail-panel" style="display:none; border:1px solid var(--gold-border);">
+            <div class="card-header-row mb-3">
+                <div class="card-title"><i class="bi bi-box-seam"></i> <span id="detail-title">Block Detail</span></div>
+                <button class="btn-outline-gold" id="btn-close-detail" style="font-size:.78rem; padding:4px 12px;">
+                    <i class="bi bi-x"></i> Close
+                </button>
+            </div>
+            <div class="row g-3" style="font-size:.8rem;">
+                <div class="col-12">
+                    <div style="color:var(--text-muted); margin-bottom:2px;">Hash</div>
+                    <div id="detail-hash" style="font-family:monospace; word-break:break-all; color:var(--gold);"></div>
+                </div>
+                <div class="col-12">
+                    <div style="color:var(--text-muted); margin-bottom:2px;">Previous Hash</div>
+                    <div id="detail-prev" style="font-family:monospace; word-break:break-all; color:var(--text-secondary);"></div>
+                </div>
+                <div class="col-12">
+                    <div style="color:var(--text-muted); margin-bottom:2px;">Merkle Root</div>
+                    <div id="detail-merkle" style="font-family:monospace; word-break:break-all; color:var(--text-secondary);"></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div style="color:var(--text-muted); margin-bottom:2px;">Nonce</div>
+                    <div id="detail-nonce" style="font-family:monospace;"></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div style="color:var(--text-muted); margin-bottom:2px;">Difficulty</div>
+                    <div id="detail-diff"></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div style="color:var(--text-muted); margin-bottom:2px;">Tx Count</div>
+                    <div id="detail-txcount"></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div style="color:var(--text-muted); margin-bottom:2px;">Reward</div>
+                    <div id="detail-reward" style="color:var(--gold);"></div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div style="color:var(--text-muted); margin-bottom:2px;">Miner Address</div>
+                    <div id="detail-miner" style="font-family:monospace; word-break:break-all;"></div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div style="color:var(--text-muted); margin-bottom:2px;">Timestamp</div>
+                    <div id="detail-time"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Latest Blocks -->
+        <div class="dash-card mb-4">
+            <div class="card-header-row">
+                <div class="card-title"><i class="bi bi-box-seam"></i> Latest Blocks</div>
+            </div>
+            <div class="table-responsive">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Index</th>
+                            <th>Hash</th>
+                            <th>Miner</th>
+                            <th>Tx Count</th>
+                            <th>Reward</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="blocks-tbody">
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <i class="bi bi-arrow-repeat spin"></i> Loading blocks…
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Latest Transactions -->
+        <div class="dash-card" id="section-transactions">
+            <div class="card-header-row">
+                <div class="card-title"><i class="bi bi-arrow-left-right"></i> Latest Transactions</div>
+            </div>
+            <div class="table-responsive">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Tx Hash</th>
+                            <th>Type</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-tbody">
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <i class="bi bi-arrow-repeat spin"></i> Loading transactions…
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Load explorer.js — NOT dashboard.js — so explorer logic runs -->
+<script src="{% static 'js/explorer.js' %}"></script>
+
+</body>
+</html>
