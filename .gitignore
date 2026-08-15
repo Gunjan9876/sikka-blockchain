@@ -18,7 +18,6 @@ db.sqlite3
 media/
 
 # Static files generated during deployment
-staticfiles/
 
 # ----------------------------
 # Environment Variables
