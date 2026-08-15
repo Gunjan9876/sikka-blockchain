@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Terms & Conditions | SIKKA{% endblock %}
+
+{% block extra_css %}
+<style>
+    .policy-header {
+        background: linear-gradient(135deg, var(--bg-secondary, #0c1221) 0%, rgba(212, 168, 83, 0.05) 100%);
+        padding: 5rem 0 2rem;
+        border-bottom: 1px solid var(--glass-border, rgba(212, 168, 83, 0.12));
+    }
+    
+    .policy-card {
+        background-color: var(--bg-card, rgba(15, 23, 42, 0.8));
+        border: 1px solid var(--glass-border, rgba(212, 168, 83, 0.12));
+        border-radius: 1rem;
+        box-shadow: var(--shadow-lg, 0 25px 50px rgba(0,0,0,0.5));
+        padding: 3rem;
+        margin-top: -3rem;
+        position: relative;
+        z-index: 10;
+        margin-bottom: 5rem;
+        backdrop-filter: blur(10px);
+    }
+    
+    .policy-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .policy-content h2 {
+        font-weight: 700;
+        margin-top: 3rem;
+        margin-bottom: 1.2rem;
+        color: var(--text-primary, #f1f5f9);
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .policy-content h2::before {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 24px;
+        background-color: var(--gold-primary, #d4a853);
+        margin-right: 12px;
+        border-radius: 2px;
+    }
+    
+    .policy-content p, .policy-content ul, .policy-content li {
+        color: var(--text-secondary, #94a3b8);
+        line-height: 1.8;
+        font-size: 1.05rem;
+    }
+    
+    .policy-content ul {
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .policy-content li {
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include "landing/partials/navbar.html" %}
+
+<div class="policy-header text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Terms & Conditions</h1>
+        <p class="lead text-muted">Please read these terms carefully before using SIKKA.</p>
+        <p class="small text-muted mt-2">Last updated: August 2026</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="policy-card">
+        <div class="policy-content">
+            <p class="lead mb-5 text-center">Welcome to SIKKA. These Terms & Conditions ("Terms") govern your use of the SIKKA platform, website, and related services. By accessing or using SIKKA, you agree to be bound by these Terms.</p>
+            
+            <h2>1. User Responsibilities</h2>
+            <p>As a user of SIKKA, you are responsible for maintaining the confidentiality of your account credentials, including your password, 2FA codes, and wallet information. You agree to notify us immediately of any unauthorized use of your account.</p>
+            <ul>
+                <li>You must be at least 18 years old to use our services.</li>
+                <li>You agree to provide accurate and complete information during registration.</li>
+                <li>You will not use SIKKA for any illegal or unauthorized purpose.</li>
+            </ul>
+
+            <h2>2. Acceptable Use</h2>
+            <p>You agree not to engage in any activity that disrupts or interferes with the functioning of the SIKKA platform. This includes attempting to exploit vulnerabilities, distributing malware, or engaging in automated scraping of platform data.</p>
+            
+            <h2>3. Reward System Rules</h2>
+            <p>SIKKA tokens (SKA) are digital reward points. Their issuance, valuation, and redemption are solely at the discretion of the SIKKA platform administrators. We reserve the right to modify the reward rates, mining difficulty, and payout structures at any time without prior notice.</p>
+            
+            <h2>4. Blockchain & Mining Disclaimer</h2>
+            <p>SIKKA utilizes a simulated Proof-of-Work (PoW) mechanism. While it demonstrates cryptographic principles, SKA tokens are strictly for educational, testing, or internal reward purposes and hold <strong>no real-world financial value</strong>. Mining hardware usage may consume significant electricity and processing power; you do so at your own risk.</p>
+            
+            <h2>5. Account Suspension</h2>
+            <p>We reserve the right to suspend or terminate your account at any time, with or without cause, if we determine that you have violated these Terms or engaged in fraudulent activity.</p>
+            
+            <h2>6. Intellectual Property</h2>
+            <p>All content, features, and functionality on the SIKKA platform, including text, graphics, logos, and software, are the exclusive property of SIKKA and are protected by international copyright, trademark, and other intellectual property laws.</p>
+            
+            <h2>7. Contact Information</h2>
+            <p>If you have any questions about these Terms, please contact us at <a href="mailto:legal@sikka.io" class="fw-bold" style="color: var(--primary-color, #cfa859);">legal@sikka.io</a>.</p>
+        </div>
+    </div>
+</div>
+
+{% include "landing/partials/footer.html" %}
+{% endblock %}

@@ -1,0 +1,616 @@
+{% extends 'dashboard/org_base.html' %}
+{% load static %}
+
+{% block title %}Org Rewards{% endblock %}
+{% block page_title %}University Rewards Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Styling for Search Dropdown */
+    #studentDropdown {
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+    }
+    #studentDropdown li a {
+        color: #ddd;
+        cursor: pointer;
+    }
+    #studentDropdown li a:hover {
+        background-color: #d4af37;
+        color: #000;
+    }
+    .org-logo-img {
+        max-height: 80px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+    .stat-card {
+        background: rgba(30,30,30,0.6);
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        transition: 0.3s;
+    }
+    .stat-card:hover {
+        border-color: #d4af37;
+        transform: translateY(-5px);
+    }
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #d4af37;
+    }
+    .stat-label {
+        font-size: 0.9rem;
+        color: #aaa;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+</style>
+{% endblock %}
+
+{% block main_content %}
+
+<!-- Loading Spinner -->
+<div id="loading-spinner" class="text-center p-5">
+    <div class="spinner-border text-gold" role="status"></div>
+    <p class="mt-3 text-muted">Loading organisation data...</p>
+</div>
+
+<!-- Access Denied States -->
+<div id="no-org-msg" class="dash-card mb-4 text-center p-5" style="display:none;">
+    <h3 class="text-muted">Your account is not linked to an organisation.</h3>
+</div>
+
+<div id="pending-msg" class="dash-card mb-4 text-center p-5" style="display:none;">
+    <i class="bi bi-hourglass-split display-1 text-warning mb-3"></i>
+    <h3 class="text-warning">Verification Pending</h3>
+    <p class="text-muted mt-3">Your university application is currently under review by our team. You will be able to issue rewards once verified.</p>
+</div>
+
+<div id="rejected-msg" class="dash-card mb-4 text-center p-5" style="display:none;">
+    <i class="bi bi-x-circle display-1 text-danger mb-3"></i>
+    <h3 class="text-danger">Application Rejected</h3>
+    <p class="text-muted mt-3">Unfortunately, your university application has been rejected. Please contact support for more details.</p>
+</div>
+
+<!-- Main Dashboard Content -->
+<div id="org-content" style="display:none;">
+    
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-total-rewards">0</div>
+                <div class="stat-label">Total Rewards Issued</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-value text-warning" id="stat-pending-approvals">0</div>
+                <div class="stat-label">Pending Approvals</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-value text-success" id="stat-total-ska">0.00</div>
+                <div class="stat-label">Total SKA Distributed</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-value text-info" id="stat-students-rewarded">0</div>
+                <div class="stat-label">Students Rewarded</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Organisation Info -->
+        <div class="col-md-4">
+            <div class="dash-card mb-4 text-center">
+                <div id="org-logo-container" class="mb-3 d-none">
+                    <img id="org-logo" src="" alt="University Logo" class="org-logo-img">
+                </div>
+                <h4 class="mb-2" id="org-name">...</h4>
+                <div class="mb-4">
+                    <span class="badge bg-success"><i class="bi bi-patch-check-fill"></i> Verified University</span>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-2 pb-2 border-bottom border-secondary">
+                    <span class="text-muted">Quota Remaining:</span>
+                    <span class="text-success fw-bold"><span id="org-quota-remaining">0.00</span> SKA</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Quota Used:</span>
+                    <span class="text-danger"><span id="org-quota-used">0.00</span> SKA</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Issue Reward Form -->
+        <div class="col-md-8">
+            <div class="dash-card mb-4">
+                <h5 class="mb-4"><i class="bi bi-gift text-gold me-2"></i> Issue New Reward</h5>
+                <form id="reward-form">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4 position-relative">
+                        <label class="form-label text-muted">Search Student <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-gold"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control border-secondary text-white bg-dark" id="studentSearch" placeholder="Search by name, email, or username..." autocomplete="off">
+                            <input type="hidden" id="recipient_address" required>
+                        </div>
+                        <ul class="dropdown-menu w-100 shadow" id="studentDropdown" style="max-height: 250px; overflow-y: auto; display: none; position: absolute; z-index: 1000;">
+                            <!-- Populated via JS -->
+                        </ul>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label text-muted">Amount (SKA) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-gold">SKA</span>
+                                <input type="number" id="amount" class="form-control border-secondary text-white bg-dark" step="0.00000001" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label text-muted">Achievement <span class="text-danger">*</span></label>
+                            <select id="achievement_type" class="form-select border-secondary text-white bg-dark" required>
+                                <option value="ATTENDANCE">Attendance</option>
+                                <option value="HACKATHON">Hackathon</option>
+                                <option value="CERTIFICATION">Certification</option>
+                                <option value="PLACEMENT">Placement</option>
+                                <option value="EVENT">Event</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label text-muted">Description (Optional)</label>
+                            <input type="text" id="description" class="form-control border-secondary text-white bg-dark" placeholder="e.g. 1st place in Hackathon">
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end mt-2">
+                        <button type="submit" class="btn btn-gold px-4 py-2" id="submit-reward">
+                            <i class="bi bi-send-fill me-2"></i> Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Rewards Table -->
+    <div class="dash-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="mb-0"><i class="bi bi-clock-history text-gold me-2"></i> Reward History & Approvals</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" style="border-radius: 8px; overflow: hidden;">
+                <thead class="table-active">
+                    <tr>
+                        <th class="text-muted">Date</th>
+                        <th class="text-muted">Achievement</th>
+                        <th class="text-muted">Recipient</th>
+                        <th class="text-muted">Amount</th>
+                        <th class="text-muted">Status</th>
+                        <th class="text-muted">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tx-tbody">
+                    <!-- Populated via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Action Modals -->
+<!-- Confirm Action Modal -->
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="confirmActionTitle">Confirm Action</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-white">
+                <p id="confirmActionMessage">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-gold" id="confirmActionBtn">Yes, Proceed</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Details Modal -->
+<div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title"><i class="bi bi-receipt text-gold me-2"></i> Reward Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Transaction Hash</small>
+                    <div class="d-flex align-items-center">
+                        <code class="text-info text-break" id="detail-tx-hash">N/A</code>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Description</small>
+                    <span id="detail-description"></span>
+                </div>
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <small class="text-muted d-block">Amount</small>
+                        <span class="text-success fw-bold" id="detail-amount"></span>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <small class="text-muted d-block">Status</small>
+                        <span id="detail-status"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage">
+                Success!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+{{ students_json|json_script:"students-data" }}
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const token = sessionStorage.getItem("sikka_access");
+    if(!token) {
+        window.location.href = "/accounts/login/";
+        return;
+    }
+
+    // Helper functions
+    const formatNumber = (num) => parseFloat(num).toFixed(2);
+    const formatDate = (dateStr) => {
+        if (!dateStr) return "N/A";
+        const d = new Date(dateStr);
+        return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    };
+    
+    let currentActionData = null;
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirmActionModal'));
+    const detailsModal = new bootstrap.Modal(document.getElementById('viewDetailsModal'));
+    const toastEl = document.getElementById('liveToast');
+    const toast = new bootstrap.Toast(toastEl);
+
+    const showToast = (message, isError = false) => {
+        const toastMsg = document.getElementById('toastMessage');
+        toastMsg.textContent = message;
+        toastEl.className = `toast align-items-center text-white border-0 ${isError ? 'bg-danger' : 'bg-success'}`;
+        toast.show();
+    };
+
+    // Load org info
+    fetch("/api/v1/rewards/org/", {
+        method: "GET",
+        headers: { "Authorization": "Bearer " + token }
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("loading-spinner").style.display = "none";
+        
+        if(!data.has_org) {
+            window.location.href = "/dashboard/student/rewards/";
+            return;
+        }
+
+        if(data.verification_status === "pending") {
+            document.getElementById("pending-msg").style.display = "block";
+            return;
+        }
+
+        if(data.verification_status === "rejected") {
+            document.getElementById("rejected-msg").style.display = "block";
+            return;
+        }
+
+        document.getElementById("org-content").style.display = "block";
+        document.getElementById("org-name").textContent = data.name;
+        document.getElementById("org-quota-remaining").textContent = formatNumber(data.quota_remaining);
+        document.getElementById("org-quota-used").textContent = formatNumber(data.quota_used);
+        
+        if (data.logo_url) {
+            document.getElementById("org-logo").src = data.logo_url;
+            document.getElementById("org-logo-container").classList.remove("d-none");
+        }
+
+        // Dashboard Metrics Calculation
+        const rewards = data.rewards || [];
+        document.getElementById("stat-total-rewards").textContent = rewards.length;
+        
+        const pendingCount = rewards.filter(r => r.status === 'PENDING').length;
+        document.getElementById("stat-pending-approvals").textContent = pendingCount;
+        
+        const totalSKA = rewards.filter(r => r.status === 'APPROVED').reduce((sum, r) => sum + parseFloat(r.amount), 0);
+        document.getElementById("stat-total-ska").textContent = formatNumber(totalSKA);
+        
+        const uniqueStudents = new Set(rewards.filter(r => r.status === 'APPROVED').map(r => r.receiver_address)).size;
+        document.getElementById("stat-students-rewarded").textContent = uniqueStudents;
+
+        const tbody = document.getElementById("tx-tbody");
+        if(rewards.length > 0) {
+            rewards.forEach(r => {
+                const tr = document.createElement("tr");
+                let actionBtns = '';
+                let statusBadgeClass = 'bg-secondary';
+                
+                if (r.status === 'PENDING') {
+                    statusBadgeClass = 'bg-warning text-dark';
+                    actionBtns = `
+                        <button class="btn btn-sm btn-success review-btn me-1" data-id="${r.id}" data-action="approve" title="Approve"><i class="bi bi-check-circle"></i></button>
+                        <button class="btn btn-sm btn-danger review-btn me-1" data-id="${r.id}" data-action="reject" title="Reject"><i class="bi bi-x-circle"></i></button>
+                    `;
+                } else if (r.status === 'APPROVED') {
+                    statusBadgeClass = 'bg-success';
+                } else if (r.status === 'REJECTED') {
+                    statusBadgeClass = 'bg-danger';
+                }
+                
+                actionBtns += `<button class="btn btn-sm btn-outline-info view-btn" data-info='${JSON.stringify(r).replace(/'/g, "&#39;")}' title="View Details"><i class="bi bi-eye"></i></button>`;
+
+                tr.innerHTML = `
+                    <td><small>${formatDate(r.issued_at)}</small></td>
+                    <td><span class="badge bg-dark border border-secondary">${r.achievement_type}</span></td>
+                    <td><code>${r.receiver_address.substring(0, 10)}...</code></td>
+                    <td class="text-success fw-bold">+${formatNumber(r.amount)} SKA</td>
+                    <td><span class="badge ${statusBadgeClass}">${r.status}</span></td>
+                    <td>${actionBtns}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Bind review buttons
+            document.querySelectorAll('.review-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    currentActionData = {
+                        id: this.getAttribute('data-id'),
+                        action: this.getAttribute('data-action')
+                    };
+                    const actionName = currentActionData.action === 'approve' ? 'Approve' : 'Reject';
+                    document.getElementById('confirmActionTitle').textContent = `${actionName} Reward`;
+                    document.getElementById('confirmActionMessage').innerHTML = `Are you sure you want to <strong>${actionName.toLowerCase()}</strong> this reward request?`;
+                    
+                    const confirmBtn = document.getElementById('confirmActionBtn');
+                    confirmBtn.className = currentActionData.action === 'approve' ? 'btn btn-success' : 'btn btn-danger';
+                    confirmBtn.textContent = `Yes, ${actionName}`;
+                    
+                    confirmModal.show();
+                });
+            });
+
+            // Bind view details buttons
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const info = JSON.parse(this.getAttribute('data-info'));
+                    document.getElementById('detail-tx-hash').textContent = info.tx_hash || 'N/A';
+                    document.getElementById('detail-description').textContent = info.description || 'No description provided.';
+                    document.getElementById('detail-amount').textContent = `+${formatNumber(info.amount)} SKA`;
+                    
+                    let badgeClass = 'bg-secondary';
+                    if (info.status === 'PENDING') badgeClass = 'bg-warning text-dark';
+                    else if (info.status === 'APPROVED') badgeClass = 'bg-success';
+                    else if (info.status === 'REJECTED') badgeClass = 'bg-danger';
+                    
+                    document.getElementById('detail-status').innerHTML = `<span class="badge ${badgeClass}">${info.status}</span>`;
+                    
+                    detailsModal.show();
+                });
+            });
+
+        } else {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4"><i class="bi bi-inbox display-4 d-block mb-2"></i>No rewards issued yet.</td></tr>';
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        document.getElementById("loading-spinner").style.display = "none";
+        document.getElementById("no-org-msg").textContent = "Failed to load organisation data.";
+        document.getElementById("no-org-msg").style.display = "block";
+    });
+
+    // Handle Confirm Action
+    document.getElementById('confirmActionBtn').addEventListener('click', function() {
+        if (!currentActionData) return;
+        const btn = this;
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...`;
+        
+        fetch('/api/v1/rewards/review/', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                reward_id: currentActionData.id,
+                action: currentActionData.action
+            })
+        })
+        .then(res => res.json().then(data => ({ status: res.status, body: data })))
+        .then(res => {
+            confirmModal.hide();
+            if (res.status === 200) {
+                showToast(`Reward request ${currentActionData.action}d successfully.`);
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                showToast(res.body.error || "An error occurred.", true);
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        })
+        .catch(err => {
+            confirmModal.hide();
+            showToast("Network error occurred.", true);
+            btn.disabled = false;
+            btn.textContent = originalText;
+        });
+    });
+
+    // Student Search Logic
+    const studentData = JSON.parse(document.getElementById('students-data').textContent);
+    const searchInput = document.getElementById('studentSearch');
+    const dropdown = document.getElementById('studentDropdown');
+    const recipientAddress = document.getElementById('recipient_address');
+
+    if (studentData.length === 0) {
+        searchInput.placeholder = "No eligible students found";
+        searchInput.disabled = true;
+        document.getElementById("submit-reward").disabled = true;
+    }
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        dropdown.innerHTML = '';
+        if (query.length === 0) {
+            dropdown.style.display = 'none';
+            recipientAddress.value = '';
+            return;
+        }
+
+        const filtered = studentData.filter(s => 
+            s.name.toLowerCase().includes(query) || 
+            s.email.toLowerCase().includes(query) || 
+            s.username.toLowerCase().includes(query)
+        ).slice(0, 10); // Limit to 10 results
+
+        if (filtered.length > 0) {
+            filtered.forEach(s => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a class="dropdown-item py-2 border-bottom border-secondary d-flex flex-column">
+                    <span class="fw-bold">${s.name} <small class="text-muted">(@${s.username})</small></span>
+                    <small class="text-info text-truncate">${s.email}</small>
+                </a>`;
+                li.addEventListener('click', function() {
+                    searchInput.value = s.name + ` (@${s.username})`;
+                    recipientAddress.value = s.wallet_address;
+                    dropdown.style.display = 'none';
+                });
+                dropdown.appendChild(li);
+            });
+            dropdown.style.display = 'block';
+        } else {
+            dropdown.innerHTML = '<li class="p-2 text-muted text-center">No students found</li>';
+            dropdown.style.display = 'block';
+            recipientAddress.value = '';
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // Form submission
+    const form = document.getElementById("reward-form");
+    if(form) {
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            const recipient = document.getElementById("recipient_address").value;
+            if (!recipient) {
+                showToast("Please select a valid student from the search.", true);
+                return;
+            }
+            
+            const amount = document.getElementById("amount").value;
+            const achievement_type = document.getElementById("achievement_type").value;
+            const description = document.getElementById("description").value;
+            
+            const btn = document.getElementById("submit-reward");
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...`;
+            
+            fetch("/api/v1/rewards/issue/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    recipient_address: recipient,
+                    amount: amount,
+                    achievement_type: achievement_type,
+                    description: description
+                })
+            })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(res => {
+                if(res.status === 201) {
+                    showToast(`Reward successfully requested!`);
+                    form.reset();
+                    recipientAddress.value = '';
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    showToast(res.body.error || "An error occurred.", true);
+                }
+            })
+            .catch(err => {
+                showToast("Network error.", true);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="bi bi-send-fill me-2"></i> Submit Request`;
+            });
+        });
+    }
+    // Global UI handlers (Sidebar & Logout)
+    const handleLogout = (e) => {
+        if(e) e.preventDefault();
+        sessionStorage.removeItem("sikka_access");
+        sessionStorage.removeItem("sikka_refresh");
+        localStorage.removeItem("sikka_access");
+        localStorage.removeItem("sikka_refresh");
+        window.location.href = "/accounts/login/";
+    };
+    document.getElementById("btn-logout")?.addEventListener("click", handleLogout);
+    document.getElementById("sidebar-logout")?.addEventListener("click", handleLogout);
+
+    const sidebarToggle = document.getElementById("sidebar-toggle");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOverlay = document.getElementById("sidebar-overlay");
+    if (sidebarToggle && sidebar && sidebarOverlay) {
+        sidebarToggle.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+            sidebarOverlay.classList.toggle("open");
+        });
+        sidebarOverlay.addEventListener("click", () => {
+            sidebar.classList.remove("open");
+            sidebarOverlay.classList.remove("open");
+        });
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy | SIKKA{% endblock %}
+
+{% block extra_css %}
+<style>
+    .policy-header {
+        background: linear-gradient(135deg, var(--bg-secondary, #0c1221) 0%, rgba(212, 168, 83, 0.05) 100%);
+        padding: 5rem 0 2rem;
+        border-bottom: 1px solid var(--glass-border, rgba(212, 168, 83, 0.12));
+    }
+    
+    .policy-card {
+        background-color: var(--bg-card, rgba(15, 23, 42, 0.8));
+        border: 1px solid var(--glass-border, rgba(212, 168, 83, 0.12));
+        border-radius: 1rem;
+        box-shadow: var(--shadow-lg, 0 25px 50px rgba(0,0,0,0.5));
+        padding: 3rem;
+        margin-top: -3rem;
+        position: relative;
+        z-index: 10;
+        margin-bottom: 5rem;
+        backdrop-filter: blur(10px);
+    }
+    
+    .policy-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .policy-content h2 {
+        font-weight: 700;
+        margin-top: 3rem;
+        margin-bottom: 1.2rem;
+        color: var(--text-primary, #f1f5f9);
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .policy-content h2::before {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 24px;
+        background-color: var(--gold-primary, #d4a853);
+        margin-right: 12px;
+        border-radius: 2px;
+    }
+    
+    .policy-content p, .policy-content ul, .policy-content li {
+        color: var(--text-secondary, #94a3b8);
+        line-height: 1.8;
+        font-size: 1.05rem;
+    }
+    
+    .policy-content ul {
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .policy-content li {
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include "landing/partials/navbar.html" %}
+
+<div class="policy-header text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Privacy Policy</h1>
+        <p class="lead text-muted">How we protect your personal information.</p>
+        <p class="small text-muted mt-2">Last updated: August 2026</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="policy-card">
+        <div class="policy-content">
+            <p class="lead mb-5 text-center">At SIKKA, we take your privacy seriously. This Privacy Policy outlines how we collect, use, and protect your personal information when you use our platform.</p>
+            
+            <h2>1. Data We Collect</h2>
+            <p>We collect information that you provide directly to us, including but not limited to:</p>
+            <ul>
+                <li><strong>Account Information:</strong> Name, username, email address, and phone number.</li>
+                <li><strong>Wallet Information:</strong> Public wallet addresses and transaction history.</li>
+                <li><strong>Security Data:</strong> IP addresses and login activity for auditing and security purposes.</li>
+            </ul>
+
+            <h2>2. Password & Account Security</h2>
+            <p>Your security is our priority. We hash and salt all passwords using industry-standard cryptographic algorithms. We do not store plaintext passwords. We strongly encourage all users to enable Two-Factor Authentication (2FA) for an additional layer of security.</p>
+            
+            <h2>3. Email & Communication Storage</h2>
+            <p>We store your email address to send you critical account notifications, password resets, and verification links. If you opt-in to our newsletter, we may also send promotional content. We do not sell your email address to third parties.</p>
+            
+            <h2>4. Wallet Information & Blockchain Transparency</h2>
+            <p>Because SIKKA operates a transparent blockchain ledger, your wallet address and the transactions associated with it are visible to other users on the block explorer. However, your wallet address is cryptographically separate from your personally identifiable information (PII) unless you explicitly link them.</p>
+            
+            <h2>5. Cookies & Analytics</h2>
+            <p>We use cookies to maintain your session and improve your experience. We also use analytics services to understand how users interact with our platform. For more details, please see our <a href="{% url 'cookies_page' %}" class="fw-bold" style="color: var(--primary-color, #cfa859);">Cookie Policy</a>.</p>
+            
+            <h2>6. Your User Rights & Data Deletion</h2>
+            <p>You have the right to access, update, or request the deletion of your personal data. If you wish to permanently close your account and delete your data, please contact our support team. Note that immutable blockchain records (such as transactions) cannot be deleted, but your associated personal profile data can be removed.</p>
+            
+            <h2>7. Contact Us</h2>
+            <p>If you have any questions or concerns about this Privacy Policy, please contact our Data Protection Officer at <a href="mailto:privacy@sikka.io" class="fw-bold" style="color: var(--primary-color, #cfa859);">privacy@sikka.io</a>.</p>
+        </div>
+    </div>
+</div>
+
+{% include "landing/partials/footer.html" %}
+{% endblock %}

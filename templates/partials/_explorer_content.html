@@ -1,0 +1,291 @@
+
+        <!-- Header + Search -->
+        <div class="dash-card welcome-card mb-4">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <div class="welcome-title">Block Explorer 🔎</div>
+                    <div class="welcome-sub">Search by block height, block hash, wallet address, or transaction ID.</div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn-outline-gold" id="btn-refresh-explorer">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                    <a href="/dashboard/" class="btn-outline-gold" style="text-decoration:none;">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div class="input-group">
+                    <span class="input-group-text" style="background:var(--bg-surface); border-color:var(--gold-border); color:var(--gold);">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" id="explorer-search"
+                           placeholder="Search by Address / Txn Hash / Block / Token"
+                           style="background:var(--bg-surface); border-color:var(--gold-border); color:var(--text-primary);">
+                    <button class="btn-gold" id="btn-explorer-search" type="button">Search</button>
+                </div>
+            </div>
+            <!-- Global Search Empty State (Hidden by default) -->
+            <div id="search-empty-state" class="empty-state-search mt-3" style="display:none;">
+                <i class="bi bi-search" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                <div style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.5rem;">No matching results found.</div>
+                <div>Please double-check the Block Height, Hash, or Wallet Address and try again.</div>
+            </div>
+        </div>
+
+        <!-- Chain Stats (Enhanced) -->
+        <div class="row g-3 mb-4">
+            <div class="col-lg-3 col-6">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Chain Height</div>
+                    <div class="stat-val-new" id="stat-block-height"><span class="spinner-border spinner-border-sm"></span></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Total Transactions</div>
+                    <div class="stat-val-new" id="stat-tx-total"><span class="spinner-border spinner-border-sm"></span></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Pending (Mempool)</div>
+                    <div class="stat-val-new" id="stat-tx-pending"><span class="spinner-border spinner-border-sm"></span></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Network Difficulty</div>
+                    <div class="stat-val-new" id="stat-difficulty"><span class="spinner-border spinner-border-sm"></span></div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-12">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Avg Block Time</div>
+                    <div class="stat-val-new" id="stat-avg-time" style="font-size: 1.2rem;">Not Available</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-12">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Current Block Reward</div>
+                    <div class="stat-val-new" id="stat-reward" style="font-size: 1.2rem;">Not Available</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-12">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Genesis Block</div>
+                    <div class="stat-val-new" id="stat-genesis" style="font-size: 1.2rem; cursor: pointer; color: var(--gold);" onclick="showBlockDetail(0)">
+                        #0 (View)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Latest Blocks -->
+        <div class="dash-card mb-4">
+            <div class="card-header-row">
+                <div class="card-title"><i class="bi bi-box-seam"></i> Latest Blocks</div>
+            </div>
+            <div class="table-responsive">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Block</th>
+                            <th>Hash</th>
+                            <th>Miner</th>
+                            <th>Txns</th>
+                            <th>Reward</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="blocks-tbody">
+                        <tr><td colspan="6"><div class="empty-state"><i class="bi bi-arrow-repeat spin"></i> Loading blocks…</div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-controls">
+                <button class="btn-outline-gold" id="btn-block-prev" disabled><i class="bi bi-chevron-left"></i> Prev</button>
+                <span style="font-size: 0.8rem; color: var(--text-muted);" id="block-page-info">Page 1</span>
+                <button class="btn-outline-gold" id="btn-block-next" disabled>Next <i class="bi bi-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Latest Transactions -->
+        <div class="dash-card" id="section-transactions">
+            <div class="card-header-row">
+                <div class="card-title"><i class="bi bi-arrow-left-right"></i> Latest Transactions</div>
+            </div>
+            <div class="table-responsive">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Tx Hash</th>
+                            <th>Type</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-tbody">
+                        <tr><td colspan="6"><div class="empty-state"><i class="bi bi-arrow-repeat spin"></i> Loading transactions…</div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-controls">
+                <button class="btn-outline-gold" id="btn-tx-prev" disabled><i class="bi bi-chevron-left"></i> Prev</button>
+                <span style="font-size: 0.8rem; color: var(--text-muted);" id="tx-page-info">Page 1</span>
+                <button class="btn-outline-gold" id="btn-tx-next" disabled>Next <i class="bi bi-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Block Details Modal -->
+        <div class="sikka-modal-overlay" id="block-detail-modal">
+            <div class="sikka-modal" style="max-width: 600px;">
+                <div class="sikka-modal-header">
+                    <div class="sikka-modal-title"><i class="bi bi-box"></i> <span id="mdl-block-title">Block Details</span></div>
+                    <button class="sikka-modal-close"><i class="bi bi-x-lg"></i></button>
+                </div>
+                
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Block Height</span>
+                    <span class="modal-detail-value" id="mdl-block-height">—</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Status</span>
+                    <span class="modal-detail-value"><span class="badge" style="background: rgba(74, 222, 128, 0.1); color: #4ade80;">Mined</span> <span id="mdl-block-confirmations" style="font-size:0.75rem; color:var(--text-muted); margin-left:8px;"></span></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Timestamp</span>
+                    <span class="modal-detail-value" id="mdl-block-time">—</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Block Hash</span>
+                    <span class="modal-detail-value mono-sm"><span id="mdl-block-hash">—</span> <button class="copy-btn" id="copy-block-hash" title="Copy Hash"><i class="bi bi-clipboard"></i></button></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Previous Hash</span>
+                    <span class="modal-detail-value mono-sm"><span id="mdl-block-prev">—</span> <button class="copy-btn" id="copy-block-prev" title="Copy Prev Hash"><i class="bi bi-clipboard"></i></button></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Merkle Root</span>
+                    <span class="modal-detail-value mono-sm"><span id="mdl-block-merkle">—</span></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Mined By</span>
+                    <span class="modal-detail-value mono-sm"><span id="mdl-block-miner">—</span> <button class="nav-link-btn ms-2" id="nav-block-miner">View Wallet</button></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Block Reward</span>
+                    <span class="modal-detail-value" id="mdl-block-reward" style="color:var(--gold);">—</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Difficulty / Nonce</span>
+                    <span class="modal-detail-value" id="mdl-block-diff-nonce">—</span>
+                </div>
+                
+                <div class="mt-4 mb-2" style="font-size: 0.85rem; font-weight: 600; color: var(--gold); border-bottom: 1px solid var(--gold-border); padding-bottom: 0.5rem;">
+                    Transactions in this Block (<span id="mdl-block-tx-count">0</span>)
+                </div>
+                <div id="mdl-block-tx-list" style="max-height: 200px; overflow-y: auto; font-size: 0.75rem;">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction Details Modal (Upgraded) -->
+        <div class="sikka-modal-overlay" id="tx-detail-modal">
+            <div class="sikka-modal" style="max-width: 600px;">
+                <div class="sikka-modal-header">
+                    <div class="sikka-modal-title"><i class="bi bi-receipt"></i> Transaction Details</div>
+                    <button class="sikka-modal-close"><i class="bi bi-x-lg"></i></button>
+                </div>
+                
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Transaction Hash</span>
+                    <span class="modal-detail-value mono-sm"><span id="mdl-tx-hash">—</span> <button class="copy-btn" id="copy-tx-hash" title="Copy Tx Hash"><i class="bi bi-clipboard"></i></button></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Status</span>
+                    <span class="modal-detail-value" id="mdl-tx-status-wrap">
+                        <span id="mdl-tx-status">—</span> 
+                        <span id="mdl-tx-confirmations" style="font-size:0.75rem; color:var(--text-muted); margin-left:8px;"></span>
+                    </span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Block</span>
+                    <span class="modal-detail-value"><span id="mdl-tx-block">—</span> <button class="nav-link-btn ms-2" id="nav-tx-block" style="display:none;">View Block</button></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Timestamp</span>
+                    <span class="modal-detail-value" id="mdl-tx-time">—</span>
+                </div>
+                <hr style="border-color: var(--gold-border); margin: 0.5rem 0;">
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">From</span>
+                    <span class="modal-detail-value mono-sm"><span id="mdl-tx-sender">—</span> <button class="copy-btn" id="copy-tx-sender" title="Copy Address"><i class="bi bi-clipboard"></i></button> <button class="nav-link-btn ms-2" id="nav-tx-sender">View Wallet</button></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">To</span>
+                    <span class="modal-detail-value mono-sm"><span id="mdl-tx-receiver">—</span> <button class="copy-btn" id="copy-tx-receiver" title="Copy Address"><i class="bi bi-clipboard"></i></button> <button class="nav-link-btn ms-2" id="nav-tx-receiver">View Wallet</button></span>
+                </div>
+                <hr style="border-color: var(--gold-border); margin: 0.5rem 0;">
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Amount</span>
+                    <span class="modal-detail-value" id="mdl-tx-amount" style="color:var(--gold); font-size:1.1rem; font-weight:600;">—</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Transaction Fee</span>
+                    <span class="modal-detail-value" id="mdl-tx-fee">—</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wallet Details Modal -->
+        <div class="sikka-modal-overlay" id="wallet-detail-modal">
+            <div class="sikka-modal" style="max-width: 600px;">
+                <div class="sikka-modal-header">
+                    <div class="sikka-modal-title"><i class="bi bi-wallet2"></i> Wallet Details</div>
+                    <button class="sikka-modal-close"><i class="bi bi-x-lg"></i></button>
+                </div>
+                
+                <div style="background:rgba(0,0,0,.4); border:1px solid var(--gold-border); border-radius:12px; padding:1rem; margin-bottom: 1rem;">
+                    <div style="font-size:.72rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:.4rem;">
+                        <i class="bi bi-fingerprint me-1"></i> Address
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span id="mdl-wallet-address" style="font-family:monospace; font-size:.8rem; word-break:break-all; color:var(--text-primary);">—</span>
+                        <button class="copy-btn" id="copy-wallet-address" title="Copy address">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="text-center mb-3">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Estimated Balance</div>
+                    <div style="font-size: 2rem; font-weight: 700; font-family: monospace;" id="mdl-wallet-balance">—</div>
+                </div>
+                
+                <div class="wallet-stats-grid">
+                    <div class="wallet-stat-box">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Total Transactions</div>
+                        <div id="mdl-wallet-tx-count" style="font-size: 1.1rem; color: var(--gold); font-weight: 600;">0</div>
+                    </div>
+                    <div class="wallet-stat-box">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Blocks Mined</div>
+                        <div id="mdl-wallet-blocks" style="font-size: 1.1rem; color: var(--gold); font-weight: 600;">0</div>
+                    </div>
+                    <div class="wallet-stat-box">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">First Activity</div>
+                        <div id="mdl-wallet-first" style="font-size: 0.8rem; color: var(--text-primary);">—</div>
+                    </div>
+                    <div class="wallet-stat-box">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Last Activity</div>
+                        <div id="mdl-wallet-last" style="font-size: 0.8rem; color: var(--text-primary);">—</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+

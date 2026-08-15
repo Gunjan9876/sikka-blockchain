@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Cookie Policy | SIKKA{% endblock %}
+
+{% block extra_css %}
+<style>
+    .policy-header {
+        background: linear-gradient(135deg, var(--bg-secondary, #0c1221) 0%, rgba(212, 168, 83, 0.05) 100%);
+        padding: 5rem 0 2rem;
+        border-bottom: 1px solid var(--glass-border, rgba(212, 168, 83, 0.12));
+    }
+    
+    .policy-card {
+        background-color: var(--bg-card, rgba(15, 23, 42, 0.8));
+        border: 1px solid var(--glass-border, rgba(212, 168, 83, 0.12));
+        border-radius: 1rem;
+        box-shadow: var(--shadow-lg, 0 25px 50px rgba(0,0,0,0.5));
+        padding: 3rem;
+        margin-top: -3rem;
+        position: relative;
+        z-index: 10;
+        margin-bottom: 5rem;
+        backdrop-filter: blur(10px);
+    }
+    
+    .policy-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .policy-content h2 {
+        font-weight: 700;
+        margin-top: 3rem;
+        margin-bottom: 1.2rem;
+        color: var(--text-primary, #f1f5f9);
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .policy-content h2::before {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 24px;
+        background-color: var(--gold-primary, #d4a853);
+        margin-right: 12px;
+        border-radius: 2px;
+    }
+    
+    .policy-content p, .policy-content ul, .policy-content li {
+        color: var(--text-secondary, #94a3b8);
+        line-height: 1.8;
+        font-size: 1.05rem;
+    }
+    
+    .policy-content ul {
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .policy-content li {
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include "landing/partials/navbar.html" %}
+
+<div class="policy-header text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Cookie Policy</h1>
+        <p class="lead text-muted">Learn how we use cookies to improve your experience.</p>
+        <p class="small text-muted mt-2">Last updated: August 2026</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="policy-card">
+        <div class="policy-content">
+            <p class="lead mb-5 text-center">This Cookie Policy explains how SIKKA uses cookies and similar technologies to recognize you when you visit our website and use our platform.</p>
+            
+            <h2>1. What are Cookies?</h2>
+            <p>Cookies are small data files that are placed on your computer or mobile device when you visit a website. They are widely used by online service providers in order to make their websites or services work more efficiently, as well as to provide reporting information.</p>
+            
+            <h2>2. Essential Cookies</h2>
+            <p>These cookies are strictly necessary to provide you with services available through our website and to use some of its features. For example, they allow us to:</p>
+            <ul>
+                <li>Remember your CSRF tokens for security purposes.</li>
+                <li>Ensure the integrity of the registration and login processes.</li>
+                <li>Maintain session state across multiple pages.</li>
+            </ul>
+            <p>Because these cookies are strictly necessary, you cannot refuse them without impacting how our site functions.</p>
+
+            <h2>3. Authentication & Session Cookies</h2>
+            <p>We use local storage and session storage to securely manage your authentication tokens (JWT). This allows you to stay logged into the SIKKA dashboard securely without needing to re-enter your credentials on every page load. These tokens are cleared when you log out or when your session expires.</p>
+            
+            <h2>4. Preference Cookies</h2>
+            <p>Preference cookies enable a website to remember information that changes the way the website behaves or looks, like your preferred language or the region that you are in. We use these to remember your choice of theme (Light/Dark mode).</p>
+            
+            <h2>5. Analytics Cookies</h2>
+            <p>We use analytics cookies to collect information about how users interact with our website. This helps us improve our platform. The information collected is aggregated and anonymous. It includes the number of visitors, where they come from, and the pages they visited.</p>
+            
+            <h2>6. Managing Your Cookies</h2>
+            <p>Most web browsers allow you to control cookies through their settings preferences. However, if you limit the ability of websites to set cookies, you may worsen your overall user experience, as it will no longer be personalized to you. It may also stop you from saving customized settings like login information.</p>
+        </div>
+    </div>
+</div>
+
+{% include "landing/partials/footer.html" %}
+{% endblock %}

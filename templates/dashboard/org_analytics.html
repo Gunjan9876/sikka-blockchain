@@ -1,0 +1,302 @@
+{% extends "dashboard/org_base.html" %}
+
+{% block page_title %}University Analytics{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Stats Cards */
+    .stat-card {
+        background: var(--bg-card);
+        border: 1px solid var(--gold-border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: transform 0.2s;
+        height: 100%;
+    }
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--gold);
+        margin-top: 0.5rem;
+    }
+
+    /* Chart Containers */
+    .chart-card {
+        background: var(--bg-card);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        height: 100%;
+    }
+    .chart-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Insight Panels */
+    .insight-panel {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        height: 100%;
+    }
+    .insight-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .insight-row:last-child {
+        border-bottom: none;
+    }
+    
+    /* Filters & Controls */
+    .controls-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .sikka-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        outline: none;
+    }
+    .sikka-select:focus {
+        border-color: var(--gold);
+    }
+    
+    .btn-export {
+        background: transparent;
+        border: 1px solid var(--gold-border);
+        color: var(--gold);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        transition: all 0.2s;
+    }
+    .btn-export:hover {
+        background: rgba(212, 175, 55, 0.1);
+    }
+
+    /* Loading Overlay */
+    #analyticsLoader {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(18, 18, 18, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+</style>
+{% endblock %}
+
+{% block main_content %}
+<div id="analyticsLoader">
+    <div class="spinner-border text-gold" role="status" style="width: 3rem; height: 3rem;"></div>
+</div>
+
+<div class="container-fluid py-4" style="max-width: 1400px; margin: 0 auto;">
+    
+    <!-- Header Controls -->
+    <div class="controls-bar">
+        <h2 class="fw-bold mb-0">Analytics & Insights</h2>
+        <div class="d-flex gap-3 align-items-center">
+            <select class="sikka-select" id="timeFilter">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="7days">Last 7 Days</option>
+                <option value="30days">Last 30 Days</option>
+            </select>
+            <button class="btn-export" id="exportCsvBtn">
+                <i class="bi bi-filetype-csv me-1"></i> Export CSV
+            </button>
+        </div>
+    </div>
+
+    <!-- Overview Metrics -->
+    <div class="row g-4 mb-4">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card text-center">
+                <div class="text-muted small text-uppercase">Total Students</div>
+                <div class="stat-value" id="valTotalStudents">--</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card text-center">
+                <div class="text-muted small text-uppercase">Active Students</div>
+                <div class="stat-value" id="valActiveStudents">--</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card text-center">
+                <div class="text-muted small text-uppercase">Rewards Issued</div>
+                <div class="stat-value" id="valRewardsIssued">--</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card text-center">
+                <div class="text-muted small text-uppercase">SKA Distributed</div>
+                <div class="stat-value" id="valSkaDistributed">--</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card text-center">
+                <div class="text-muted small text-uppercase">Remaining Quota</div>
+                <div class="stat-value" id="valQuotaRemaining">--</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card text-center">
+                <div class="text-muted small text-uppercase">Average Reward</div>
+                <div class="stat-value" id="valAvgReward">--</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-graph-up-arrow text-gold"></i> Rewards Over Time</div>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="rewardsLineChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-pie-chart text-gold"></i> Reward Status</div>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="statusPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-bar-chart-fill text-gold"></i> Top 10 Rewarded Students</div>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="topStudentsBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-diagram-3 text-gold"></i> Achievement Distribution</div>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="achievementDoughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insights Row -->
+    <div class="row g-4 mb-4">
+        
+        <!-- University Performance -->
+        <div class="col-md-4">
+            <div class="insight-panel">
+                <div class="chart-title"><i class="bi bi-building text-gold"></i> University Performance</div>
+                <div class="insight-row">
+                    <span class="text-muted">Quota Allocated</span>
+                    <span class="fw-bold" id="valQuotaAllocated">--</span>
+                </div>
+                <div class="insight-row">
+                    <span class="text-muted">Quota Used</span>
+                    <span class="fw-bold text-danger" id="valQuotaUsed">--</span>
+                </div>
+                <div class="insight-row">
+                    <span class="text-muted">Approval Rate</span>
+                    <span class="fw-bold text-success" id="valApprovalRate">--%</span>
+                </div>
+                <div class="insight-row">
+                    <span class="text-muted">Highest Reward</span>
+                    <span class="fw-bold text-gold" id="valHighestReward">--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blockchain Insights -->
+        <div class="col-md-4">
+            <div class="insight-panel">
+                <div class="chart-title"><i class="bi bi-link-45deg text-gold"></i> Blockchain Insights</div>
+                <div class="insight-row">
+                    <span class="text-muted">Total Network Txs</span>
+                    <span class="fw-bold" id="valTotalTxs">--</span>
+                </div>
+                <div class="insight-row">
+                    <span class="text-muted">Successful Txs</span>
+                    <span class="fw-bold text-success" id="valSuccessTxs">--</span>
+                </div>
+                <div class="insight-row">
+                    <span class="text-muted">Failed Txs</span>
+                    <span class="fw-bold text-danger" id="valFailedTxs">--</span>
+                </div>
+                <div class="insight-row">
+                    <span class="text-muted">Blocks Mined</span>
+                    <span class="fw-bold text-gold" id="valBlocksMined">--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Insights -->
+        <div class="col-md-4">
+            <div class="insight-panel">
+                <div class="chart-title"><i class="bi bi-stars text-gold"></i> Most Active Students</div>
+                <div id="activeStudentsContainer">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-12">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-activity text-gold"></i> Recent Activity Feed</div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0" style="background: transparent;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <th class="text-muted small text-uppercase border-0">Event Type</th>
+                                <th class="text-muted small text-uppercase border-0">Description</th>
+                                <th class="text-muted small text-uppercase border-0">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activityFeedBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/org_analytics.js"></script>
+{% endblock %}

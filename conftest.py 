@@ -1,0 +1,14 @@
+from django.test.signals import setting_changed
+from django.conf import settings
+
+
+def pytest_configure(config):
+    from django.conf import settings
+    if not settings.configured:
+        return
+    
+
+def pytest_sessionstart(session):
+    from django.conf import settings
+    settings.REST_FRAMEWORK["DEFAULT_THROTTLE_CLASSES"] = []
+    settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {}

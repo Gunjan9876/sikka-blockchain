@@ -1,0 +1,148 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Account Settings | SIKKA{% endblock %}
+
+{% block extra_css %}
+<style>
+    .settings-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--gold-border);
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+    
+    .settings-header {
+        background-color: rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid var(--gold-border);
+        padding: 1.5rem;
+    }
+    
+    .settings-body {
+        padding: 1.5rem;
+    }
+    
+    .avatar-upload-container {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        border: 3px solid var(--gold);
+        background-color: var(--bg-surface);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .avatar-upload-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .avatar-upload-container .upload-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        text-align: center;
+        padding: 4px 0;
+        font-size: 0.8rem;
+        transition: all 0.2s ease;
+        opacity: 0;
+    }
+    
+    .avatar-upload-container:hover .upload-overlay {
+        opacity: 1;
+    }
+    
+    #profileImageInput {
+        display: none;
+    }
+    
+    .settings-form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text-label);
+    }
+    
+    .form-control-custom {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        background-color: var(--bg-deep);
+        border: 1px solid var(--gold-border);
+        color: var(--text-primary);
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    
+    .form-control-custom:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 0.2rem var(--gold-dim);
+        outline: none;
+        color: var(--text-primary);
+        background-color: var(--bg-deep);
+    }
+    
+    .form-control-custom:disabled {
+        background-color: var(--bg-surface);
+        color: var(--text-muted);
+        opacity: 0.7;
+    }
+    
+    .btn-save {
+        background: linear-gradient(90deg, var(--gold), var(--gold-light));
+        color: #111;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(212,175,55,.35);
+    }
+    
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .status-verified {
+        background-color: rgba(46,204,113,.12);
+        color: var(--success, #2ecc71);
+        border: 1px solid rgba(46,204,113,.3);
+    }
+    
+    .status-pending {
+        background-color: rgba(136,136,136,.1);
+        color: var(--text-muted);
+        border: 1px solid rgba(136,136,136,.2);
+    }
+    
+    .settings-section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--text-primary);
+    }
+</style>
+{% endblock %}
+
+{% block main_content %}
+{% include "partials/_settings_content.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/settings.js' %}?v=1.1"></script>
+{% endblock %}

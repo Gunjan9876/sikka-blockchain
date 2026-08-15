@@ -1,0 +1,415 @@
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4 fade-in">
+        <div class="col-6 col-lg-3">
+            <div class="wallet-summary-card">
+                <div>
+                    <div class="wallet-summary-icon"><i class="bi bi-wallet2"></i></div>
+                    <div class="wallet-summary-label">Available Balance</div>
+                    <div class="wallet-summary-val" id="summary-balance"><span class="spinner-border spinner-border-sm"></span></div>
+                </div>
+                <div class="wallet-summary-trend" id="summary-balance-trend"><i class="bi bi-graph-up-arrow"></i> Live</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="wallet-summary-card">
+                <div>
+                    <div class="wallet-summary-icon"><i class="bi bi-hourglass-split"></i></div>
+                    <div class="wallet-summary-label">Pending Rewards</div>
+                    <div class="wallet-summary-val" id="summary-pending"><span class="spinner-border spinner-border-sm"></span></div>
+                </div>
+                <div class="wallet-summary-trend neutral"><i class="bi bi-clock"></i> Awaiting Block</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="wallet-summary-card">
+                <div>
+                    <div class="wallet-summary-icon"><i class="bi bi-lightning-charge"></i></div>
+                    <div class="wallet-summary-label">Today's Earnings</div>
+                    <div class="wallet-summary-val" id="summary-today"><span class="spinner-border spinner-border-sm"></span></div>
+                </div>
+                <div class="wallet-summary-trend" id="summary-today-trend"></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="wallet-summary-card">
+                <div>
+                    <div class="wallet-summary-icon"><i class="bi bi-trophy"></i></div>
+                    <div class="wallet-summary-label">Lifetime Rewards</div>
+                    <div class="wallet-summary-val" id="summary-lifetime"><span class="spinner-border spinner-border-sm"></span></div>
+                </div>
+                <div class="wallet-summary-trend"><i class="bi bi-stars"></i> Total Mined</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- Main Wallet Box (Left) -->
+        <div class="col-lg-8 fade-in" style="animation-delay: 0.1s;">
+            <div class="dash-card h-100">
+                <div class="card-header-row border-0 mb-2">
+                    <div class="card-title"><i class="bi bi-safe"></i> Secure Wallet</div>
+                    <div class="d-flex gap-2" id="wallet-security-badges">
+                        <span class="card-badge badge-idle" id="wallet-status-badge"><span class="spinner-border spinner-border-sm"></span></span>
+                        <span class="card-badge badge-idle" id="wallet-sync-badge"><i class="bi bi-arrow-repeat"></i> Syncing</span>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <!-- Address Box -->
+                        <div style="background:rgba(0,0,0,.4); border:1px solid var(--gold-border); border-radius:12px; padding:1.2rem;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div style="font-size:.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em;">
+                                    <i class="bi bi-fingerprint me-1"></i> Wallet Address
+                                </div>
+                                <span class="badge" style="background: rgba(74, 222, 128, 0.1); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.2); font-size: 0.65rem;">SIKKA Mainnet</span>
+                            </div>
+                            <div id="wallet-address" style="font-family:monospace; font-size:.78rem; word-break:break-all; color:var(--text-primary); margin-bottom:.8rem;">—</div>
+                            <div class="d-flex gap-2">
+                                <button id="btn-copy-address" class="btn-outline-gold" style="font-size:.78rem; padding:.3rem .8rem;">
+                                    <i class="bi bi-clipboard me-1"></i> Copy
+                                </button>
+                                <button id="btn-show-qr" class="btn-outline-gold" style="font-size:.78rem; padding:.3rem .8rem;">
+                                    <i class="bi bi-qr-code me-1"></i> QR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <!-- Public Key Box -->
+                        <div style="background:rgba(0,0,0,.4); border:1px solid var(--gold-border); border-radius:12px; padding:1.2rem;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div style="font-size:.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em;">
+                                    <i class="bi bi-key me-1"></i> Public Key
+                                </div>
+                                <span id="wallet-created" style="font-size: 0.65rem; color: var(--text-muted);">—</span>
+                            </div>
+                            <div id="wallet-pubkey" style="font-family:monospace; font-size:.68rem; word-break:break-all; color:#666; max-height:40px; overflow:hidden;">—</div>
+                            <button id="btn-toggle-pubkey" style="background:none; border:none; color:var(--gold); font-size:.72rem; cursor:pointer; padding:.3rem 0; margin-top:.4rem;">
+                                Show full key <i class="bi bi-chevron-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Wallet Insights -->
+                <div class="mt-4 pt-4" style="border-top: 1px solid rgba(255,255,255,0.05);">
+                    <div class="card-title mb-3" style="font-size:0.9rem;"><i class="bi bi-bar-chart-fill"></i> Wallet Insights</div>
+                    <div class="wallet-insights-grid">
+                        <div class="wallet-insight-box">
+                            <div class="wallet-insight-val" id="insight-streak">—</div>
+                            <div class="wallet-insight-label">Longest Streak</div>
+                        </div>
+                        <div class="wallet-insight-box">
+                            <div class="wallet-insight-val" id="insight-avg-daily">—</div>
+                            <div class="wallet-insight-label">Avg Daily Earnings</div>
+                        </div>
+                        <div class="wallet-insight-box">
+                            <div class="wallet-insight-val" id="insight-highest">—</div>
+                            <div class="wallet-insight-label">Highest Reward</div>
+                        </div>
+                        <div class="wallet-insight-box">
+                            <div class="wallet-insight-val" id="insight-blocks">—</div>
+                            <div class="wallet-insight-label">Blocks Mined</div>
+                        </div>
+                        <div class="wallet-insight-box">
+                            <div class="wallet-insight-val" id="insight-avg-reward">—</div>
+                            <div class="wallet-insight-label">Avg Reward</div>
+                        </div>
+                        <div class="wallet-insight-box">
+                            <div class="wallet-insight-val" id="insight-best-day">—</div>
+                            <div class="wallet-insight-label">Most Active Day</div>
+                        </div>
+                        <div class="wallet-insight-box">
+                            <div class="wallet-insight-val" id="insight-efficiency">—</div>
+                            <div class="wallet-insight-label">Mining Efficiency</div>
+                        </div>
+                        <div class="wallet-insight-box">
+                            <div class="wallet-insight-val">Top 1%</div>
+                            <div class="wallet-insight-label">Network Rank</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions (Right) -->
+        <div class="col-lg-4 fade-in" style="animation-delay: 0.2s;">
+            <div class="dash-card h-100">
+                <div class="card-header-row border-0 mb-3">
+                    <div class="card-title"><i class="bi bi-lightning-charge-fill"></i> Quick Actions</div>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <a href="#section-send" class="wallet-quick-action">
+                            <i class="bi bi-send-fill text-primary"></i>
+                            <div class="wallet-quick-label">Send</div>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <button class="wallet-quick-action w-100 border-0" id="btn-quick-receive">
+                            <i class="bi bi-box-arrow-in-down text-success"></i>
+                            <div class="wallet-quick-label">Receive</div>
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <a href="/dashboard/mining/" class="wallet-quick-action">
+                            <i class="bi bi-cpu text-warning"></i>
+                            <div class="wallet-quick-label">Mine</div>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="/dashboard/explorer/" class="wallet-quick-action">
+                            <i class="bi bi-search text-info"></i>
+                            <div class="wallet-quick-label">Explorer</div>
+                        </a>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button class="wallet-quick-action w-100 border-0 d-flex align-items-center justify-content-center gap-2 py-2" id="btn-export-pdf">
+                            <i class="bi bi-file-earmark-pdf mb-0" style="font-size:1.1rem; color:#f87171;"></i>
+                            <span class="wallet-quick-label mb-0">Download Statement</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Analytics Section -->
+    <div class="row g-4 mb-4 fade-in" style="animation-delay: 0.3s;">
+        <div class="col-lg-7">
+            <div class="dash-card h-100">
+                <div class="card-header-row border-0 mb-2">
+                    <div class="card-title"><i class="bi bi-graph-up"></i> Wallet Growth</div>
+                </div>
+                <div style="height: 250px; position:relative;">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="dash-card h-100">
+                <div class="card-header-row border-0 mb-2">
+                    <div class="card-title"><i class="bi bi-bar-chart-steps"></i> Daily Earnings</div>
+                </div>
+                <div style="height: 250px; position:relative;">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Send SKA -->
+        <div class="dash-card mb-4" id="section-send">
+            <div class="card-header-row">
+                <div class="card-title"><i class="bi bi-arrow-left-right"></i> Send SKA</div>
+            </div>
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <label class="form-label" style="font-size:.82rem; color:var(--text-muted);">Receiver Wallet Address</label>
+                    <input type="text" id="send-address" class="form-control"
+                        placeholder="SKA…" style="font-family:monospace; font-size:.82rem;
+                        background:var(--bg-surface); color:var(--text-primary); border-color:var(--gold-border);">
+                </div>
+                <div class="col-lg-3">
+                    <label class="form-label" style="font-size:.82rem; color:var(--text-muted);">Amount (SKA)</label>
+                    <input type="number" id="send-amount" class="form-control"
+                        placeholder="0.00000000" step="0.00000001" min="0"
+                        style="background:var(--bg-surface); color:var(--text-primary); border-color:var(--gold-border);">
+                </div>
+                <div class="col-lg-3 d-flex align-items-end">
+                    <button class="btn-gold w-100" id="btn-send"><i class="bi bi-send-fill me-1"></i> Send</button>
+                </div>
+            </div>
+            <div class="mt-2" style="font-size:.75rem; color:var(--text-muted);">
+                <i class="bi bi-info-circle me-1"></i>
+                Sender is debited immediately. Receiver is credited when the next block is mined.
+            </div>
+            <div class="mt-1" id="fee-estimate-row" style="display:none; font-size:.75rem; color:var(--gold);">
+                <i class="bi bi-receipt me-1"></i>
+                Network fee: <strong id="fee-estimate-val">—</strong> SKA &nbsp;|&nbsp;
+                You pay: <strong id="fee-total-val">—</strong> SKA total
+            </div>
+        </div>
+        <div class="row g-4">
+        <!-- Transaction History (Left) -->
+        <div class="col-lg-8 fade-in" style="animation-delay: 0.4s;">
+            <div class="dash-card h-100">
+                <div class="card-header-row mb-3 border-0">
+                    <div class="card-title"><i class="bi bi-clock-history"></i> Transaction History</div>
+                    <span id="tx-meta" style="font-size:.75rem; color:var(--text-muted);"></span>
+                </div>
+                
+                <!-- Advanced Toolbar -->
+                <div class="table-toolbar">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <input type="text" id="tx-search" class="table-search" placeholder="Search Hash or Address...">
+                        <select id="tx-sort" class="table-select">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="highest">Highest Amount</option>
+                            <option value="lowest">Lowest Amount</option>
+                        </select>
+                        <select id="tx-page-size" class="table-select">
+                            <option value="10">10 / page</option>
+                            <option value="25">25 / page</option>
+                            <option value="50">50 / page</option>
+                            <option value="100">100 / page</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-actions">
+                        <button class="btn-outline-gold" id="btn-export-csv" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;"><i class="bi bi-filetype-csv"></i> CSV</button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filter-tabs" id="tx-filters">
+                    <button class="filter-tab active" data-filter="all">All</button>
+                    <button class="filter-tab" data-filter="mining">Mining</button>
+                    <button class="filter-tab" data-filter="incoming">Incoming</button>
+                    <button class="filter-tab" data-filter="outgoing">Outgoing</button>
+                    <button class="filter-tab" data-filter="completed">Completed</button>
+                    <button class="filter-tab" data-filter="pending">Pending</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>TX Hash</th>
+                                <th>Type</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tx-tbody">
+                            <tr><td colspan="7"><div class="premium-empty-state"><i class="bi bi-clock-history"></i><p>No transactions yet.</p></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="tx-pagination" class="mt-3 d-flex gap-2 justify-content-center"></div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Timeline (Right) -->
+        <div class="col-lg-4 fade-in" style="animation-delay: 0.5s;">
+            <div class="dash-card h-100">
+                <div class="card-header-row mb-3 border-0">
+                    <div class="card-title"><i class="bi bi-activity"></i> Recent Activity</div>
+                </div>
+                <div class="timeline-container" id="recent-activity-timeline">
+                    <!-- Dynamic Timeline Items -->
+                    <div class="skeleton skeleton-text mt-3" style="width:100%; height:60px;"></div>
+                    <div class="skeleton skeleton-text mt-3" style="width:100%; height:60px;"></div>
+                    <div class="skeleton skeleton-text mt-3" style="width:100%; height:60px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- QR Code Modal (Upgraded) -->
+    <div class="sikka-modal-overlay" id="qr-modal">
+        <div class="sikka-modal" style="max-width:400px; text-align:center;">
+            <button class="sikka-modal-close" style="position:absolute; right:16px; top:16px;"><i class="bi bi-x-lg"></i></button>
+            <div style="font-size:1.3rem; font-weight:700; color:var(--text-primary); margin-bottom:8px;">Receive SKA</div>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:24px;">Scan the QR code or copy the address below</div>
+            
+            <div class="qr-container mx-auto" style="background:#fff; padding:20px; border-radius:16px; display:inline-block; margin-bottom:20px;">
+                <div class="qr-box" style="position:relative; width:200px; height:200px;">
+                    <img id="qr-image" src="" alt="QR Code" style="width:100%; height:100%; display:none;">
+                    <div id="qr-loading" class="spinner-border text-primary" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);"></div>
+                </div>
+            </div>
+            
+            <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px; margin-bottom:20px;">
+                <div style="font-size:0.7rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Wallet Address</div>
+                <div id="qr-address-text" style="font-family:monospace; font-size:0.85rem; color:var(--gold); word-break:break-all;">—</div>
+            </div>
+            
+            <div class="d-flex gap-2 justify-content-center">
+                <button class="btn btn-outline-light flex-fill" id="btn-qr-copy"><i class="bi bi-clipboard"></i> Copy</button>
+                <a id="btn-qr-download" class="btn btn-gold flex-fill" download="sikka-wallet-qr.png"><i class="bi bi-download"></i> Save QR</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Send Confirmation Modal -->
+    <div class="sikka-modal-overlay" id="confirm-modal">
+        <div class="sikka-modal" style="max-width:400px;">
+            <div class="sikka-modal-header">
+                <div class="sikka-modal-title"><i class="bi bi-shield-check"></i> Confirm Transaction</div>
+                <button class="sikka-modal-close"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="confirm-detail">You are about to send</div>
+            <div class="confirm-amount" id="confirm-amt-val">0.00 SKA</div>
+            <div class="confirm-detail mt-3">To address:</div>
+            <div class="confirm-addr" id="confirm-to-val">—</div>
+            
+            <div class="confirm-fee-row">
+                <span>Network Fee:</span>
+                <span id="confirm-fee-val">0.00 SKA</span>
+            </div>
+            <div class="confirm-total-row">
+                <span>Total Deduction:</span>
+                <span id="confirm-total-val">0.00 SKA</span>
+            </div>
+
+            <div class="confirm-actions">
+                <button class="btn-outline-gold" id="btn-confirm-cancel">Cancel</button>
+                <button class="btn-gold" id="btn-confirm-send"><i class="bi bi-send-check"></i> Confirm & Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Details Modal (Upgraded) -->
+    <div class="sikka-modal-overlay" id="tx-detail-modal">
+        <div class="sikka-modal" style="max-width:450px;">
+            <div class="sikka-modal-header border-bottom pb-3 mb-3" style="border-color: rgba(255,255,255,0.1) !important;">
+                <div class="sikka-modal-title"><i class="bi bi-receipt"></i> Transaction Details</div>
+                <button class="sikka-modal-close"><i class="bi bi-x-lg"></i></button>
+            </div>
+            
+            <div class="text-center mb-4">
+                <div id="mdl-tx-direction" style="font-size:0.85rem; font-weight:600; text-transform:uppercase; margin-bottom:5px;"></div>
+                <div id="mdl-tx-amount" style="color:var(--text-primary); font-size:2rem; font-weight:700;">—</div>
+                <div id="mdl-tx-status" class="mt-2">—</div>
+            </div>
+
+            <div class="modal-detail-row">
+                <span class="modal-detail-label">Transaction Hash</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="modal-detail-value mono-sm" id="mdl-tx-hash" style="max-width:180px; overflow:hidden; text-overflow:ellipsis;">—</span>
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-1" id="btn-copy-hash" style="font-size:0.7rem;"><i class="bi bi-clipboard"></i></button>
+                </div>
+            </div>
+            <div class="modal-detail-row">
+                <span class="modal-detail-label">Network Fee</span>
+                <span class="modal-detail-value" id="mdl-tx-fee">—</span>
+            </div>
+            <div class="modal-detail-row">
+                <span class="modal-detail-label">Confirmations</span>
+                <span class="modal-detail-value" id="mdl-tx-confirmations">12+ Blocks</span>
+            </div>
+            <div class="modal-detail-row">
+                <span class="modal-detail-label">Block Height</span>
+                <span class="modal-detail-value" id="mdl-tx-block">—</span>
+            </div>
+            <div class="modal-detail-row mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.1);">
+                <span class="modal-detail-label">Sender</span>
+                <span class="modal-detail-value mono-sm text-end" id="mdl-tx-sender" style="max-width:200px; word-break:break-all;">—</span>
+            </div>
+            <div class="modal-detail-row">
+                <span class="modal-detail-label">Receiver</span>
+                <span class="modal-detail-value mono-sm text-end" id="mdl-tx-receiver" style="max-width:200px; word-break:break-all;">—</span>
+            </div>
+            <div class="modal-detail-row">
+                <span class="modal-detail-label">Timestamp</span>
+                <span class="modal-detail-value" id="mdl-tx-time">—</span>
+            </div>
+        </div>
+    </div>

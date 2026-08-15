@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Verification — SIKKA</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0f0f0f; font-family: 'Segoe UI', Arial, sans-serif; }
+    .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 14px; padding: 48px 40px; max-width: 440px; width: 90%; text-align: center; }
+    .logo { font-size: 22px; font-weight: 700; letter-spacing: 3px; color: #f0b90b; margin-bottom: 32px; }
+    .logo span { color: #fff; }
+    .icon { font-size: 48px; margin-bottom: 20px; }
+    h1 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 12px; }
+    p { font-size: 14px; color: #888; line-height: 1.7; margin-bottom: 24px; }
+    .btn { display: inline-block; padding: 12px 28px; background: #f0b90b; color: #000; font-weight: 700; font-size: 14px; text-decoration: none; border-radius: 8px; }
+    .spinner { width: 40px; height: 40px; border: 3px solid #2a2a2a; border-top-color: #f0b90b; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #status-verifying, #status-success, #status-error { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">SKA<span>KKA</span></div>
+
+    <div id="status-verifying">
+      <div class="spinner"></div>
+      <h1>Verifying your email…</h1>
+      <p>Please wait a moment.</p>
+    </div>
+
+    <div id="status-success">
+      <div class="icon">✅</div>
+      <h1>Email verified!</h1>
+      <p>Your SIKKA account is now active. You can log in.</p>
+      <a href="/accounts/login/" class="btn">Go to Login</a>
+    </div>
+
+    <div id="status-error">
+      <div class="icon">❌</div>
+      <h1>Verification failed</h1>
+      <p id="error-msg">The link is invalid or has expired.</p>
+      <a href="/accounts/login/" class="btn" style="background:#333; color:#fff;">Back to Login</a>
+    </div>
+  </div>
+
+  <script>
+    const token = "{{ token }}";
+    const API   = `/api/v1/accounts/verify-email/${token}/`;
+
+    document.getElementById("status-verifying").style.display = "block";
+
+    fetch(API, { method: "GET" })
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById("status-verifying").style.display = "none";
+        if (data.message) {
+          document.getElementById("status-success").style.display = "block";
+        } else {
+          document.getElementById("error-msg").textContent = data.error || "Link invalid or expired.";
+          document.getElementById("status-error").style.display = "block";
+        }
+      })
+      .catch(() => {
+        document.getElementById("status-verifying").style.display = "none";
+        document.getElementById("error-msg").textContent = "Network error. Please try again.";
+        document.getElementById("status-error").style.display = "block";
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+{% extends 'dashboard/org_base.html' %}
+{% load static %}
+
+{% block title %}Login Activity | SIKKA{% endblock %}
+
+{% block extra_css %}
+<style>
+    .activity-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--gold-border);
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+    }
+    
+    .activity-header {
+        background-color: rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid var(--gold-border);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .activity-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--text-primary);
+    }
+    
+    .activity-list {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+    
+    .activity-item {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        transition: background-color 0.2s;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-item:hover {
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+    
+    .device-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(212, 175, 55, 0.1);
+        color: var(--gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    
+    .activity-details {
+        flex-grow: 1;
+    }
+    
+    .device-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+    }
+    
+    .activity-meta {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+    
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        font-weight: 500;
+    }
+    
+    .status-success {
+        background-color: rgba(46, 204, 113, 0.1);
+        color: var(--success, #2ecc71);
+    }
+    
+    .status-failed {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: var(--danger, #e74c3c);
+    }
+</style>
+{% endblock %}
+
+{% block main_content %}
+{% include 'partials/_activity_content.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/login_activity.js' %}?v=1.0"></script>
+{% endblock %}

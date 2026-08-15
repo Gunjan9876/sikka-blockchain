@@ -1,0 +1,17 @@
+{% extends 'dashboard/org_base.html' %}
+{% load static %}
+
+{% block title %}Wallet{% endblock %}
+{% block page_title %}Wallet{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/wallet.css' %}">
+{% endblock %}
+
+{% block main_content %}
+{% include 'partials/_wallet_content.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/wallet.js' %}?v=2"></script>
+{% endblock %}

@@ -1,0 +1,299 @@
+{% extends 'dashboard/org_base.html' %}
+{% load static %}
+
+{% block title %}University Dashboard{% endblock %}
+{% block page_title %}University Overview{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* University Dashboard Specific Styles */
+    .welcome-card {
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(30, 30, 30, 0.5) 100%);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 1rem;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .welcome-card::after {
+        content: "\F19D"; /* bi-mortarboard */
+        font-family: "bootstrap-icons";
+        position: absolute;
+        right: -20px;
+        bottom: -40px;
+        font-size: 10rem;
+        color: rgba(212, 175, 55, 0.03);
+        transform: rotate(-15deg);
+        pointer-events: none;
+    }
+    .org-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--primary-color, #cfa859);
+        background: var(--card-bg, #1a1a1a);
+    }
+    .badge-verified {
+        background: rgba(40, 167, 69, 0.15);
+        color: #28a745;
+        border: 1px solid rgba(40, 167, 69, 0.3);
+        padding: 0.35em 0.65em;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .badge-pending {
+        background: rgba(255, 193, 7, 0.15);
+        color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        padding: 0.35em 0.65em;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .stat-card {
+        background: var(--card-bg, #1a1a1a);
+        border: 1px solid var(--border-color, #2a2a2a);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(212, 175, 55, 0.3);
+    }
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+    .icon-gold { background: rgba(212, 175, 55, 0.1); color: var(--primary-color, #cfa859); }
+    .icon-blue { background: rgba(13, 110, 253, 0.1); color: #0d6efd; }
+    .icon-green { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+    .icon-purple { background: rgba(111, 66, 193, 0.1); color: #6f42c1; }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-color, #fff);
+        line-height: 1.2;
+    }
+    .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-muted, #888);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+    
+    .quick-action-btn {
+        background: var(--card-bg, #1a1a1a);
+        border: 1px solid var(--border-color, #2a2a2a);
+        color: var(--text-color, #fff);
+        padding: 1rem;
+        border-radius: 0.75rem;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        width: 100%;
+    }
+    .quick-action-btn:hover {
+        background: rgba(212, 175, 55, 0.05);
+        border-color: var(--primary-color, #cfa859);
+        color: var(--primary-color, #cfa859);
+    }
+    .quick-action-btn i {
+        font-size: 1.5rem;
+        color: var(--primary-color, #cfa859);
+    }
+    
+    .activity-feed {
+        background: var(--card-bg, #1a1a1a);
+        border: 1px solid var(--border-color, #2a2a2a);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        height: 100%;
+    }
+    
+    .activity-placeholder {
+        border: 1px dashed var(--border-color, #2a2a2a);
+        border-radius: 0.5rem;
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-muted, #888);
+        background: rgba(0,0,0,0.2);
+    }
+</style>
+{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-card d-flex align-items-center gap-4">
+                <div id="org-logo-container">
+                    <div class="org-logo d-flex align-items-center justify-content-center shadow-sm" style="font-size: 2rem; color: #cfa859;">
+                        <i class="bi bi-bank"></i>
+                    </div>
+                </div>
+                
+                <div>
+                    <h2 class="mb-2 fw-bold text-white" id="org-name">Loading...</h2>
+                    <div class="d-flex gap-3 align-items-center" id="org-badges">
+                        <span class="badge badge-pending rounded-pill"><i class="bi bi-hourglass-split me-1"></i> Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-icon icon-blue"><i class="bi bi-people-fill"></i></div>
+                    <div class="stat-value" id="stat-students">--</div>
+                </div>
+                <div class="stat-label mt-3">Registered Students</div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-icon icon-gold"><i class="bi bi-award-fill"></i></div>
+                    <div class="stat-value" id="stat-rewards">--</div>
+                </div>
+                <div class="stat-label mt-3">Rewards Issued</div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-icon icon-purple"><i class="bi bi-box-arrow-in-down"></i></div>
+                    <div class="stat-value" id="stat-pending">--</div>
+                </div>
+                <div class="stat-label mt-3">Pending Requests</div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-icon icon-green"><i class="bi bi-currency-exchange"></i></div>
+                    <div class="stat-value"><span id="stat-distributed">--</span> <span style="font-size:1rem;">SKA</span></div>
+                </div>
+                <div class="stat-label mt-3">Total Distributed</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="activity-feed">
+                <h5 class="mb-4 text-white fw-bold"><i class="bi bi-lightning-charge text-warning me-2"></i>Quick Actions</h5>
+                
+                <div class="d-flex flex-column gap-3">
+                    <a href="{% url 'dashboard:org_rewards' %}" class="quick-action-btn">
+                        <i class="bi bi-award"></i>
+                        <div>
+                            <div class="fw-bold">Manage Rewards</div>
+                            <div class="small text-muted">Issue or approve pending rewards</div>
+                        </div>
+                    </a>
+                    
+                    <a href="#" class="quick-action-btn" onclick="alert('Student Management Module coming soon!')">
+                        <i class="bi bi-people"></i>
+                        <div>
+                            <div class="fw-bold">Student Directory</div>
+                            <div class="small text-muted">View and manage enrolled students</div>
+                        </div>
+                    </a>
+                    
+                    <a href="#" class="quick-action-btn" onclick="alert('Analytics Module coming soon!')">
+                        <i class="bi bi-graph-up"></i>
+                        <div>
+                            <div class="fw-bold">View Analytics</div>
+                            <div class="small text-muted">Distribution charts and reports</div>
+                        </div>
+                    </a>
+                    
+                    <a href="#" class="quick-action-btn" onclick="alert('Notification Center coming soon!')">
+                        <i class="bi bi-megaphone"></i>
+                        <div>
+                            <div class="fw-bold">Broadcast Notification</div>
+                            <div class="small text-muted">Send alerts to student wallets</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quota & Analytics Preview -->
+        <div class="col-lg-8">
+            <div class="activity-feed d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="text-white fw-bold m-0"><i class="bi bi-pie-chart-fill me-2" style="color:var(--primary-color);"></i>Reward Quota Overview</h5>
+                    <a href="{% url 'dashboard:org_rewards' %}" class="btn btn-sm btn-outline-warning rounded-pill px-3">View Details</a>
+                </div>
+                
+                <div class="row align-items-center mb-4 flex-grow-1">
+                    <div class="col-md-6 text-center">
+                        <div id="quota-chart-container" style="width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(var(--primary-color) 0% 0%, rgba(212,175,55,0.1) 0% 100%); margin: 0 auto; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <div style="width: 120px; height: 120px; border-radius: 50%; background: var(--card-bg); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                <span class="fw-bold fs-4 text-white" id="quota-used-display">--</span>
+                                <span class="small text-muted">Used</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-4 mt-md-0">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small fw-bold">TOTAL ALLOCATED QUOTA</span>
+                                <span class="text-white fw-bold"><span id="quota-total">--</span> SKA</span>
+                            </div>
+                            <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1);">
+                                <div class="progress-bar" style="background: var(--primary-color); width: 100%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small fw-bold">QUOTA REMAINING</span>
+                                <span class="text-success fw-bold"><span id="quota-remaining">--</span> SKA</span>
+                            </div>
+                            <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1);">
+                                <div class="progress-bar bg-success" id="quota-progress-bar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="activity-placeholder">
+                    <i class="bi bi-bar-chart-line fs-2 mb-2 d-block"></i>
+                    Advanced Analytics Module Integration Pending
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/org_dashboard.js' %}"></script>
+{% endblock %}

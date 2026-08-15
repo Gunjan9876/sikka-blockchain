@@ -1,0 +1,464 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Mining Console{% endblock %}
+{% block page_title %}Mining Console{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card-new {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--gold-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        backdrop-filter: blur(8px);
+        transition: transform 0.2s, box-shadow 0.2s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .stat-card-new:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(212, 175, 55, 0.1);
+    }
+    .stat-label-new {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
+    }
+    .stat-val-new {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        font-family: monospace;
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 250px;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    
+    .chart-empty {
+        display: none;
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        background: rgba(0,0,0,0.5);
+        border-radius: 8px;
+        z-index: 10;
+        color: var(--text-muted);
+    }
+
+    .progress-bar-bg {
+        width: 100%;
+        height: 8px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+    .progress-bar-fill {
+        height: 100%;
+        background: var(--gold);
+        width: 0%;
+        transition: width 1s linear;
+        border-radius: 4px;
+    }
+    .progress-bar-fill.solving {
+        background: #4ade80;
+        animation: pulse-green 1s infinite;
+    }
+    @keyframes pulse-green {
+        0% { opacity: 1; }
+        50% { opacity: 0.6; }
+        100% { opacity: 1; }
+    }
+    
+    .explorer-row:hover {
+        background: rgba(212, 175, 55, 0.05) !important;
+        cursor: pointer;
+    }
+    
+    .copy-btn {
+        background: none;
+        border: none;
+        color: var(--gold);
+        cursor: pointer;
+        padding: 0 4px;
+        font-size: 0.85rem;
+        transition: color 0.2s;
+    }
+    .copy-btn:hover {
+        color: #fff;
+    }
+
+    .pagination-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-top: 1px solid var(--gold-border);
+    }
+    
+    .mining-controls {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .skeleton-box {
+        background: rgba(255,255,255,0.05);
+        border-radius: 4px;
+        animation: pulse-bg 1.5s infinite;
+    }
+    @keyframes pulse-bg {
+        0% { opacity: 0.6; }
+        50% { opacity: 1; }
+        100% { opacity: 0.6; }
+    }
+</style>
+{% endblock %}
+
+{% block main_content %}
+
+        <!-- Mining Overview (Enhanced) -->
+        <div class="row g-3 mb-4" id="mining-analytics-row">
+            <div class="col-lg-3 col-6">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Mining Status</div>
+                    <div class="stat-val-new" id="stat-mining-status" style="color:var(--text-muted);">Idle</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Total Blocks Mined</div>
+                    <div class="stat-val-new" id="stat-total-blocks"><div class="skeleton-box" style="width:50%; height:20px;"></div></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Lifetime Rewards</div>
+                    <div class="stat-val-new" id="stat-total-coins" style="color:var(--gold);"><div class="skeleton-box" style="width:70%; height:20px;"></div></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Avg Solve Time</div>
+                    <div class="stat-val-new" id="stat-avg-solve"><div class="skeleton-box" style="width:60%; height:20px;"></div></div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-12">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Network Difficulty</div>
+                    <div class="stat-val-new" id="stat-network-diff"><div class="skeleton-box" style="width:30%; height:20px;"></div></div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-12">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Current Reward</div>
+                    <div class="stat-val-new" id="stat-current-reward"><div class="skeleton-box" style="width:80%; height:20px;"></div></div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-12">
+                <div class="stat-card-new">
+                    <div class="stat-label-new">Success Rate</div>
+                    <div class="stat-val-new" id="stat-success-rate"><div class="skeleton-box" style="width:40%; height:20px;"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <div class="dash-card">
+                    <div class="card-header-row">
+                        <div class="card-title"><i class="bi bi-bar-chart-fill"></i> Daily Rewards</div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-empty" id="chart-rewards-empty">
+                            <i class="bi bi-bar-chart" style="font-size:2rem; margin-bottom:0.5rem;"></i>
+                            <div>Not enough data to display</div>
+                        </div>
+                        <canvas id="chart-rewards"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="dash-card">
+                    <div class="card-header-row">
+                        <div class="card-title"><i class="bi bi-graph-up"></i> Mining Activity (Blocks)</div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-empty" id="chart-activity-empty">
+                            <i class="bi bi-graph-up" style="font-size:2rem; margin-bottom:0.5rem;"></i>
+                            <div>Not enough data to display</div>
+                        </div>
+                        <canvas id="chart-activity"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PoW Status Card -->
+        <div class="dash-card mb-4">
+            <div class="card-header-row">
+                <div class="card-title"><i class="bi bi-cpu"></i> Proof-of-Work Console</div>
+                <span class="card-badge badge-idle" id="mining-status-badge">Idle</span>
+            </div>
+            
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                    <div style="font-size:.75rem; color:var(--text-muted); text-transform:uppercase;">Network Difficulty</div>
+                    <div id="pow-console-diff" style="font-family:monospace; font-size:1.4rem; color:var(--text-primary);">—</div>
+                </div>
+                <div class="col-sm-6">
+                    <div style="font-size:.75rem; color:var(--text-muted); text-transform:uppercase;">Block Reward</div>
+                    <div id="pow-console-reward" style="font-family:monospace; font-size:1.4rem; color:var(--gold);">—</div>
+                </div>
+            </div>
+
+            <!-- Estimated Completion and Live Console -->
+            <div id="pow-live-box" style="display:none; background:rgba(0,0,0,.4); border:1px solid var(--gold-border); border-radius:12px; padding:1.25rem; margin-bottom:1.5rem;">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div style="font-size:.75rem; color:var(--text-muted); text-transform:uppercase;">Time Elapsed</div>
+                        <div id="pow-time-elapsed" style="font-family:monospace; font-size:1.4rem; color:var(--text-primary);">00:00:00</div>
+                    </div>
+                    <div class="col-sm-6 text-sm-end">
+                        <div style="font-size:.75rem; color:var(--text-muted); text-transform:uppercase;">Est. Time Remaining</div>
+                        <div id="pow-time-remaining" style="font-family:monospace; font-size:1.4rem; color:var(--gold);">—</div>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between" style="font-size: 0.75rem; color: var(--text-muted);">
+                        <span>Mining Progress</span>
+                        <span id="pow-progress-text">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="pow-progress-bar"></div>
+                    </div>
+                </div>
+                
+                <div class="mt-3" style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 6px;">
+                    <i class="bi bi-terminal"></i> <span id="pow-console-log">Ready to start mining...</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-group mining-controls">
+                <button class="btn-gold" id="btn-start" style="flex: 1;"><i class="bi bi-play-fill"></i> Start Mining</button>
+                <button class="btn-gold" id="btn-claim" disabled style="flex: 1;"><i class="bi bi-cpu"></i> Solve & Claim</button>
+                <button class="btn-outline-gold" id="btn-refresh-status"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+            </div>
+            
+            <div class="mt-3" style="font-size:.75rem; color:var(--text-muted);">
+                <i class="bi bi-info-circle me-1"></i>
+                Mining rewards are determined by network difficulty, pool share, and your hardware rig's hash rate.
+            </div>
+        </div>
+
+        <!-- Rig + Pool Row -->
+        <div class="row g-4 mb-4">
+            <!-- Hardware Rig -->
+            <div class="col-lg-6">
+                <div class="dash-card h-100">
+                    <div class="card-header-row">
+                        <div class="card-title"><i class="bi bi-motherboard"></i> Hardware Rig</div>
+                        <span class="card-badge" id="rig-tier-badge" style="background:var(--gold-dim); color:var(--gold);">—</span>
+                    </div>
+
+                    <div class="stat-grid mt-2">
+                        <div class="stat-item">
+                            <div class="stat-label">Rig Tier</div>
+                            <div class="stat-value" style="font-size:1rem;" id="rig-tier-label"><div class="skeleton-box" style="width:100%; height:16px;"></div></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Hash Rate</div>
+                            <div class="stat-value" style="font-size:1rem;" id="rig-hash-rate"><div class="skeleton-box" style="width:100%; height:16px;"></div></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Reward Multiplier</div>
+                            <div class="stat-value" style="font-size:1rem; color:var(--gold);" id="rig-multiplier"><div class="skeleton-box" style="width:100%; height:16px;"></div></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Diff Modifier</div>
+                            <div class="stat-value" style="font-size:1rem;" id="rig-skip"><div class="skeleton-box" style="width:100%; height:16px;"></div></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Power Efficiency</div>
+                            <div class="stat-value" style="font-size:1rem;">Not Available</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4" id="rig-upgrade-wrap">
+                        <button class="btn-outline-gold w-100" id="btn-upgrade-rig">
+                            <i class="bi bi-arrow-up-circle me-1"></i> Upgrade Rig — <span id="rig-upgrade-cost">...</span>
+                        </button>
+                    </div>
+                    <div id="rig-max-label" style="display:none; font-size:.78rem; color:var(--gold); text-align:center; padding:.5rem 0;">
+                        <i class="bi bi-stars me-1"></i> Max Tier Reached
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mining Pool -->
+            <div class="col-lg-6">
+                <div class="dash-card h-100">
+                    <div class="card-header-row">
+                        <div class="card-title"><i class="bi bi-server"></i> Mining Pool</div>
+                        <span class="card-badge" id="pool-status-badge" style="background:var(--gold-dim); color:var(--gold);">—</span>
+                    </div>
+
+                    <!-- In Pool view -->
+                    <div id="pool-in-view" style="display:none;">
+                        <div class="stat-grid mt-2">
+                            <div class="stat-item">
+                                <div class="stat-label">Pool Name</div>
+                                <div class="stat-value" style="font-size:1rem;" id="pool-name">—</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Pool Fee</div>
+                                <div class="stat-value" style="font-size:1rem; color:var(--danger);" id="pool-fee">—</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Pool Members</div>
+                                <div class="stat-value" style="font-size:1rem;" id="pool-members">Not Available</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Total Hash Rate</div>
+                                <div class="stat-value" style="font-size:1rem;" id="pool-hashrate">— H/s</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Your Share</div>
+                                <div class="stat-value" style="font-size:1rem;">Not Available</div>
+                            </div>
+                        </div>
+                        <button class="btn-outline-gold w-100 mt-4" id="btn-leave-pool" style="border-color:var(--danger); color:var(--danger);">
+                            <i class="bi bi-door-open me-1"></i> Leave Pool
+                        </button>
+                    </div>
+
+                    <!-- Not in Pool view -->
+                    <div id="pool-join-view" style="display:none;">
+                        <div class="mb-3" style="font-size:.85rem; color:var(--text-muted);">
+                            <i class="bi bi-info-circle me-1"></i> Joining a pool splits rewards but increases block discovery consistency.
+                        </div>
+                        <select id="pool-select" class="form-control mb-3"
+                            style="background:var(--bg-surface); color:var(--text-primary); border-color:var(--gold-border); font-size:.85rem;">
+                            <option value="">Select a pool…</option>
+                        </select>
+                        <button class="btn-gold w-100" id="btn-join-pool">
+                            <i class="bi bi-people-fill me-1"></i> Join Pool
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mining History with Search/Filter -->
+        <div class="dash-card">
+            <div class="card-header-row mb-3">
+                <div class="card-title"><i class="bi bi-list-nested"></i> Mining History</div>
+                <div class="d-flex gap-2">
+                    <select id="history-filter-status" class="form-control form-control-sm" style="background:var(--bg-surface); color:var(--text-primary); border-color:var(--gold-border); font-size:.8rem; max-width: 120px;">
+                        <option value="ALL">All Status</option>
+                        <option value="CLAIMED">Claimed</option>
+                        <option value="RUNNING">Running</option>
+                        <option value="FAILED">Failed</option>
+                    </select>
+                    <input type="text" id="history-search" class="form-control form-control-sm" placeholder="Search hash, rig..." style="background:var(--bg-surface); color:var(--text-primary); border-color:var(--gold-border); font-size:.8rem; max-width: 150px;">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Reward</th>
+                            <th>Rig Tier</th>
+                            <th>Pool</th>
+                            <th>Started</th>
+                            <th>Claimed / Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody">
+                        <tr><td colspan="6"><div class="empty-state"><div class="spinner-border spinner-border-sm" style="color:var(--gold);"></div> Loading mining history...</div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination Controls -->
+            <div class="pagination-controls mt-2" id="history-pagination-wrap" style="display:none;">
+                <button class="btn-outline-gold" id="btn-history-prev"><i class="bi bi-chevron-left"></i> Prev</button>
+                <span style="font-size: 0.8rem; color: var(--text-muted);" id="history-page-info">Page 1</span>
+                <button class="btn-outline-gold" id="btn-history-next">Next <i class="bi bi-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Mining Session Details Modal -->
+        <div class="sikka-modal-overlay" id="session-detail-modal">
+            <div class="sikka-modal" style="max-width: 500px;">
+                <div class="sikka-modal-header">
+                    <div class="sikka-modal-title"><i class="bi bi-hammer"></i> Mining Session Details</div>
+                    <button class="sikka-modal-close"><i class="bi bi-x-lg"></i></button>
+                </div>
+                
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Status</span>
+                    <span class="modal-detail-value" id="mdl-session-status">—</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Block Reward</span>
+                    <span class="modal-detail-value" id="mdl-session-reward" style="color:var(--gold); font-size:1.1rem; font-weight:600;">—</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Block Height</span>
+                    <span class="modal-detail-value" id="mdl-session-height">Not Available</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Block Hash</span>
+                    <span class="modal-detail-value mono-sm" style="display:flex; align-items:center; gap:4px; max-width:60%;"><span id="mdl-session-hash" style="overflow:hidden; text-overflow:ellipsis;">Not Available</span> <button class="copy-btn" id="copy-session-hash"><i class="bi bi-clipboard"></i></button></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Difficulty / Nonce</span>
+                    <span class="modal-detail-value" id="mdl-session-diff-nonce">Not Available</span>
+                </div>
+                <hr style="border-color: var(--gold-border); margin: 0.5rem 0;">
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Started At</span>
+                    <span class="modal-detail-value" id="mdl-session-start">—</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Claimed At</span>
+                    <span class="modal-detail-value" id="mdl-session-claim">—</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Duration</span>
+                    <span class="modal-detail-value" id="mdl-session-duration">—</span>
+                </div>
+                <hr style="border-color: var(--gold-border); margin: 0.5rem 0;">
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Rig Used</span>
+                    <span class="modal-detail-value" id="mdl-session-rig">—</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Pool Used</span>
+                    <span class="modal-detail-value" id="mdl-session-pool">—</span>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Use defer to not block render, though it's at end of body anyway -->
+<script src="{% static 'js/mining.js' %}?v=4.0"></script>
+{% endblock %}

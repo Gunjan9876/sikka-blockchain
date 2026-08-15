@@ -1,0 +1,68 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block title %}Login Activity | SIKKA{% endblock %}
+
+{% block extra_css %}
+<style>
+    .activity-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--gold-border);
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    
+    .activity-header {
+        background-color: rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid var(--gold-border);
+        padding: 1.5rem;
+    }
+    
+    .activity-table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        border-bottom: 2px solid var(--gold-border);
+    }
+    
+    .activity-table td {
+        vertical-align: middle;
+        padding: 1rem 0.5rem;
+        border-bottom: 1px solid var(--gold-border);
+        color: var(--text-primary);
+    }
+    
+    .activity-table tr:hover td {
+        background-color: rgba(255,255,255,0.02);
+    }
+    
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .status-success {
+        background-color: rgba(46,204,113,.12);
+        color: var(--success, #2ecc71);
+        border: 1px solid rgba(46,204,113,.3);
+    }
+    
+    .status-failed {
+        background-color: rgba(231,76,60,.12);
+        color: var(--danger, #e74c3c);
+        border: 1px solid rgba(231,76,60,.3);
+    }
+</style>
+{% endblock %}
+
+{% block main_content %}
+{% include "partials/_activity_content.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/login_activity.js' %}?v=1.0"></script>
+{% endblock %}

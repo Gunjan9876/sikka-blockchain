@@ -1,0 +1,113 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Block Explorer{% endblock %}
+{% block page_title %}Block Explorer{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Explorer Specific Enhancements */
+    .stat-card-new {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--gold-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        backdrop-filter: blur(8px);
+        transition: transform 0.2s, box-shadow 0.2s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .stat-card-new:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(212, 175, 55, 0.1);
+    }
+    .stat-label-new {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
+    }
+    .stat-val-new {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        font-family: monospace;
+    }
+    
+    .explorer-row:hover {
+        background: rgba(212, 175, 55, 0.05) !important;
+        cursor: pointer;
+    }
+    
+    .copy-btn {
+        background: none;
+        border: none;
+        color: var(--gold);
+        cursor: pointer;
+        padding: 0 4px;
+        font-size: 0.85rem;
+        transition: color 0.2s;
+    }
+    .copy-btn:hover {
+        color: #fff;
+    }
+    
+    .pagination-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-top: 1px solid var(--gold-border);
+    }
+    
+    .empty-state-search {
+        padding: 3rem 1rem;
+        text-align: center;
+        background: rgba(0,0,0,0.2);
+        border: 1px dashed var(--gold-border);
+        border-radius: 12px;
+        color: var(--text-muted);
+    }
+    
+    .nav-link-btn {
+        background: rgba(212, 175, 55, 0.1);
+        border: 1px solid var(--gold-border);
+        color: var(--gold);
+        border-radius: 4px;
+        padding: 2px 8px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .nav-link-btn:hover {
+        background: var(--gold);
+        color: #000;
+    }
+    
+    .wallet-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .wallet-stat-box {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(212, 175, 55, 0.1);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block main_content %}
+{% include "partials/_explorer_content.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/explorer.js' %}?v=3.0"></script>
+{% endblock %}

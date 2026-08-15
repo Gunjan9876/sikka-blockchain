@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}
+SIKKA | Contact
+{% endblock %}
+
+{% block content %}
+
+<div id="scroll-progress"></div>
+
+{% include "landing/partials/navbar.html" %}
+
+<!-- ===== Contact Hero ===== -->
+<section class="contact-hero-section" style="min-height: 45vh; display: flex; align-items: center; padding-top: 120px; padding-bottom: 40px;">
+    <div class="container">
+        <div class="text-center section-header">
+            <span class="section-badge">Get In Touch</span>
+            <h2 class="section-title">We'd Love to <span class="text-gradient">Hear From You</span></h2>
+            <p class="section-subtitle">Have questions about SIKKA? Explore our blockchain platform or reach out directly through any of the channels below.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Contact Info Cards ===== -->
+<section style="padding: 40px 0 60px;">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+
+            <!-- Email -->
+            <div class="col-lg-4 col-md-6 fade-up" data-delay="0">
+                <div class="vision-card text-center">
+                    <div class="vision-icon">
+                        <i class="bi bi-envelope-fill"></i>
+                    </div>
+                    <h4>Email Us</h4>
+                    <p>Drop us a message and we'll get back to you as soon as possible.</p>
+                    <a href="mailto:contact@sikka.io" style="color: var(--gold-primary); font-weight: 600; text-decoration: none;">
+                        contact@sikka.io
+                    </a>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="col-lg-4 col-md-6 fade-up" data-delay="1">
+                <div class="vision-card text-center">
+                    <div class="vision-icon">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <h4>Our Location</h4>
+                    <p>Built and maintained at our Blockchain Lab focused on decentralised technology.</p>
+                    <span style="color: var(--gold-primary); font-weight: 600;">Blockchain Lab</span>
+                </div>
+            </div>
+
+            <!-- Response Time -->
+            <div class="col-lg-4 col-md-6 fade-up" data-delay="2">
+                <div class="vision-card text-center">
+                    <div class="vision-icon">
+                        <i class="bi bi-clock-fill"></i>
+                    </div>
+                    <h4>Response Time</h4>
+                    <p>We typically respond to all queries within 24 hours on working days.</p>
+                    <span style="color: var(--gold-primary); font-weight: 600;">Within 24 Hours</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===== Connect With Us ===== -->
+<section style="padding: 40px 0 60px;">
+    <div class="container">
+        <div class="text-center section-header" style="margin-bottom: 2.5rem;">
+            <span class="section-badge">Follow Us</span>
+            <h2 class="section-title">Connect on <span class="text-gradient">Social Media</span></h2>
+            <p class="section-subtitle">Stay updated with the latest SIKKA news, releases and blockchain insights.</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+
+            <div class="col-lg-3 col-md-6 fade-up" data-delay="0">
+                <div class="vision-card text-center">
+                    <div class="vision-icon">
+                        <i class="bi bi-github"></i>
+                    </div>
+                    <h4>GitHub</h4>
+                    <p>Explore the source code, open issues and contribute to the SIKKA project.</p>
+                    <a href="#" class="btn btn-outline-gold btn-sm mt-2" style="border-radius: 8px;">
+                        <i class="bi bi-github"></i> View Repository
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 fade-up" data-delay="1">
+                <div class="vision-card text-center">
+                    <div class="vision-icon">
+                        <i class="bi bi-linkedin"></i>
+                    </div>
+                    <h4>LinkedIn</h4>
+                    <p>Follow our professional updates, milestones and team announcements.</p>
+                    <a href="#" class="btn btn-outline-gold btn-sm mt-2" style="border-radius: 8px;">
+                        <i class="bi bi-linkedin"></i> Follow Us
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 fade-up" data-delay="2">
+                <div class="vision-card text-center">
+                    <div class="vision-icon">
+                        <i class="bi bi-twitter-x"></i>
+                    </div>
+                    <h4>Twitter / X</h4>
+                    <p>Real-time updates, blockchain insights and SIKKA platform announcements.</p>
+                    <a href="#" class="btn btn-outline-gold btn-sm mt-2" style="border-radius: 8px;">
+                        <i class="bi bi-twitter-x"></i> Follow Us
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===== Quick Links ===== -->
+<section style="padding: 40px 0 80px;">
+    <div class="container">
+        <div class="text-center section-header" style="margin-bottom: 2.5rem;">
+            <span class="section-badge">Explore SIKKA</span>
+            <h2 class="section-title">Quick <span class="text-gradient">Navigation</span></h2>
+            <p class="section-subtitle">Jump directly to any section of the platform.</p>
+        </div>
+        <div class="cta-trust" style="justify-content: center; display: flex;">
+            <div class="trust-badges" style="flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                <a href="{% url 'home' %}" class="trust-badge" style="text-decoration: none; cursor: pointer;">
+                    <i class="bi bi-house"></i>
+                    <span>Home</span>
+                </a>
+                <a href="{% url 'about_page' %}" class="trust-badge" style="text-decoration: none; cursor: pointer;">
+                    <i class="bi bi-info-circle"></i>
+                    <span>About SIKKA</span>
+                </a>
+                <a href="{% url 'features_page' %}" class="trust-badge" style="text-decoration: none; cursor: pointer;">
+                    <i class="bi bi-stars"></i>
+                    <span>Features</span>
+                </a>
+                <a href="{% url 'how_it_works_page' %}" class="trust-badge" style="text-decoration: none; cursor: pointer;">
+                    <i class="bi bi-diagram-3"></i>
+                    <span>How It Works</span>
+                </a>
+                <a href="{% url 'vision_page' %}" class="trust-badge" style="text-decoration: none; cursor: pointer;">
+                    <i class="bi bi-rocket"></i>
+                    <span>Vision</span>
+                </a>
+                <a href="{% url 'register_page' %}" class="trust-badge" style="text-decoration: none; cursor: pointer;">
+                    <i class="bi bi-person-plus"></i>
+                    <span>Get Started</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include "landing/partials/footer.html" %}
+
+{% endblock %}
