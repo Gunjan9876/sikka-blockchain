@@ -55,6 +55,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         password = validated_data.pop("password")
         user = User(**validated_data)
         user.set_password(password)
+        user.email_verified = True 
         user.is_active = True   # active but email_verified=False
         user.save()
         return user
