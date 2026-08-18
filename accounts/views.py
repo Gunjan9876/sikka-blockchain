@@ -118,18 +118,16 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            try:
-                _send_verification_email(request, user)
-            except Exception as e:
-                logger.error("Failed to send verification email for user '%s': %s", user.username, e)
-                # Don't raise — user is created, email failure is non-fatal
+            # Email verification disabled — mark verified immediately
+            user.email_verified = True
+            user.save(update_fields=["email_verified"])
 
             _write_audit("register", user=user,
                          details={"username": user.username},
                          ip=_get_client_ip(request))
             return Response(
                 {
-                    "message": "Registered successfully. Please verify your email before logging in.",
+                    "message": "Registered successfully. You can now log in.",
                     "email_verified": user.email_verified,
                 },
                 status=status.HTTP_201_CREATED,
@@ -218,15 +216,6 @@ class LoginView(APIView):
             )
 
         cache.delete(cache_key)
-
-        # ── Email verification check ───────────────────────────────────────
-        if not user.email_verified:
-            return Response(
-                {"error": "Please verify your email before logging in.", "email_verified": False},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        # ── 2FA check ─────
 
         # ── 2FA check ──────────────────────────────────────────────────────────
         if user.totp_enabled:
