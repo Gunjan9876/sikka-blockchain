@@ -25,7 +25,7 @@ class User(AbstractUser):
     )
 
     # ── Email Verification ────────────────────────────────────────────────────
-    email_verified       = models.BooleanField(default=False)
+    email_verified       = models.BooleanField(default=True)
     email_verify_token   = models.UUIDField(default=uuid.uuid4, editable=False)
     email_token_expiry   = models.DateTimeField(default=_token_expiry)
 
