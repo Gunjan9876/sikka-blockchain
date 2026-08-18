@@ -142,11 +142,22 @@ class UniversityRegisterSerializer(RegisterSerializer):
         logo            = validated_data.pop("logo", None)
 
         # Create user (from parent create which hashes password etc.)
-        # The post_save signal automatically creates a wallet for this user.
         user = super().create(validated_data)
-        
-        # Get the automatically created wallet
-        wallet = user.wallet
+
+        # Wallet is created by a background thread via signal — wait for it,
+        # or create synchronously if the thread hasn't finished yet.
+        from wallet.models import Wallet
+        from wallet.services import create_wallet
+        import time
+        for _ in range(10):
+            try:
+                wallet = Wallet.objects.get(owner=user)
+                break
+            except Wallet.DoesNotExist:
+                time.sleep(0.3)
+        else:
+            # Thread never finished — create synchronously
+            wallet = create_wallet(owner=user)
         
         # Create organisation
         base_slug = slugify(university_name)
