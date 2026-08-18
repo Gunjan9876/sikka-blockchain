@@ -142,21 +142,17 @@ class UniversityRegisterSerializer(RegisterSerializer):
         logo            = validated_data.pop("logo", None)
 
         # Create user (from parent create which hashes password etc.)
-        user = super().create(validated_data)
-
-        # Wallet is created by a background thread via signal — wait for it,
-        # or create synchronously if the thread hasn't finished yet.
+        from django.db import transaction
         from wallet.models import Wallet
         from wallet.services import create_wallet
-        import time
-        for _ in range(10):
-            try:
-                wallet = Wallet.objects.get(owner=user)
-                break
-            except Wallet.DoesNotExist:
-                time.sleep(0.3)
-        else:
-            # Thread never finished — create synchronously
+
+        user = super().create(validated_data)
+
+        # Create wallet synchronously — bypass the async signal entirely
+        # so we can access user.wallet immediately after.
+        try:
+            wallet = Wallet.objects.get(owner=user)
+        except Wallet.DoesNotExist:
             wallet = create_wallet(owner=user)
         
         # Create organisation
